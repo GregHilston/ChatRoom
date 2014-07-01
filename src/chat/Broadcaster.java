@@ -1,6 +1,5 @@
 package chat;
 
-import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 
 public class Broadcaster {
