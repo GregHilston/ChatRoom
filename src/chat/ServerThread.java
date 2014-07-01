@@ -48,7 +48,7 @@ public class ServerThread extends Thread {
      * @param formattedMessage
      */
     public void print(String formattedMessage) {
-        out.print("Broadcast: " + formattedMessage);
+        out.println(formattedMessage);
     }
 
 

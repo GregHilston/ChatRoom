@@ -7,6 +7,7 @@ public class ClientApp {
     private String hostName;
     private int portNumber;
     private Socket socket;
+    private Boolean connected = false;
 
     public ClientApp(String hostName, int portNumber) {
         this.hostName = hostName;
@@ -16,23 +17,15 @@ public class ClientApp {
     private void connect() {
         try{
             socket = new Socket(hostName, portNumber);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-            String fromServer;
-            String clientInput;
 
-            while ((fromServer = in.readLine()) != null) {
-                if(!fromServer.equals("Server: CHATTING")) { // Filter the end state message
-                    System.out.println(fromServer);
-                }
+            Thread serverThread = new Thread(new HandleServer());
+            serverThread.start();
 
-                clientInput = stdIn.readLine();
-                if (clientInput != null) {
-                    // System.out.println("Client: " + clientInput);
-                    out.println(clientInput);
-                }
-            }
+            Thread clientThread = new Thread(new HandleClient());
+            clientThread.start();
+
+            connected = true;
+            // socket.close();
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
@@ -52,5 +45,50 @@ public class ClientApp {
 
         ClientApp client = new ClientApp(args[0], Integer.parseInt(args[1]));
         client.connect();
+    }
+
+
+    private class HandleServer implements Runnable {
+        public void run() {
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String fromServer;
+
+                while ((fromServer = in.readLine()) != null) {
+                    if(!fromServer.equals("Server: CHATTING")) { // Filter the end state message
+                        System.out.println(fromServer);
+                    }
+                }
+
+                in.close();
+                connected = false;
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private class HandleClient implements Runnable {
+        public void run() {
+            try {
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+                String clientInput;
+
+                while(connected) {
+                    clientInput = stdIn.readLine();
+                    if (clientInput != null) {
+                        System.out.println("Client: " + clientInput);
+                        out.println(clientInput);
+                    }
+                }
+
+                out.close();
+                stdIn.close();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

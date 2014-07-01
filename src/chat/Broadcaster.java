@@ -27,6 +27,7 @@ public class Broadcaster {
 
         for(ServerThread t : serverThreads) {
             if(!t.getUserName().equals(userName)) {
+                System.out.println(message + " to " + t.getUserName());
                 t.print(formattedMessage);
             }
         }
