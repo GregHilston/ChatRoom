@@ -6,6 +6,7 @@ import java.net.*;
 public class ClientApp {
     private String hostName;
     private int portNumber;
+    private Socket socket;
 
     public ClientApp(String hostName, int portNumber) {
         this.hostName = hostName;
@@ -14,7 +15,7 @@ public class ClientApp {
 
     private void connect() {
         try{
-            Socket socket = new Socket(hostName, portNumber);
+            socket = new Socket(hostName, portNumber);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
