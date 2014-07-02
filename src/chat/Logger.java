@@ -29,7 +29,7 @@ public class Logger {
             }
         }
 
-        log("Server Started");
+        log("Server Started on port " + ServerInfo.getInstance().getPortNumber());
     }
 
     public static String getFileName() {

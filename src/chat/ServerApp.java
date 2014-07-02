@@ -4,32 +4,30 @@ import java.net.*;
 import java.io.*;
 
 public class ServerApp {
-    private int portNumber;
     private ServerSocket serverSocket;
     private Broadcaster broadcaster = Broadcaster.getInstance();
-    private int clientCount = 0;
 
     public ServerApp(int portNumber) {
-        this.portNumber = portNumber;
+        ServerInfo.getInstance().setPortNumber(portNumber);
     }
 
 
     private void startAndListen() {
         try{
-            serverSocket = new ServerSocket(portNumber);
-            System.out.println("ServerApp listening on port: " + portNumber);
+            serverSocket = new ServerSocket(ServerInfo.getInstance().getPortNumber());
+            System.out.println("ServerApp listening on port: " + ServerInfo.getInstance().getPortNumber());
             Logger.getInstance().createLogFile();
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Blocking call. Waits for client
-                ServerThread currentThread = new ServerThread(clientSocket, clientCount);
+                ServerThread currentThread = new ServerThread(clientSocket, ServerInfo.getInstance().getClientCount());
                 broadcaster.addThread(currentThread);
-                Logger.getInstance().log("Client " + clientCount + " connected from " + clientSocket.getRemoteSocketAddress().toString());
+                Logger.getInstance().log("Client " + ServerInfo.getInstance().getClientCount() + " connected from " + clientSocket.getRemoteSocketAddress().toString());
                 currentThread.start();
-                clientCount++;
+                ServerInfo.getInstance().setClientCount(ServerInfo.getInstance().getClientCount() + 1);
             }
         }catch (IOException e) {
-            System.err.println("Could not listen on port " + portNumber);
+            System.err.println("Could not listen on port " + ServerInfo.getInstance().getPortNumber());
             System.exit(-1);
         }
     }

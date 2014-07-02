@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 public class ServerInfo {
     private static ServerInfo singleton = new ServerInfo();
+    private int portNumber;
     private ArrayList<String> userNames = new ArrayList<String>();
+    private int clientCount = 0;
 
     private ServerInfo() {
         // Singleton
@@ -51,5 +53,21 @@ public class ServerInfo {
             return "";
 
         return userNames.get(index);
+    }
+
+    public int getPortNumber() {
+        return portNumber;
+    }
+
+    public void setPortNumber(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
+    public int getClientCount() {
+        return clientCount;
+    }
+
+    public void setClientCount(int clientCount) {
+        this.clientCount = clientCount;
     }
 }
