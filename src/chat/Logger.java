@@ -17,7 +17,10 @@ public class Logger {
     }
 
     public void createLogFile() {
-        //if file doesn't exists, then create it
+        // If directory doesn't exist, then create it
+        file.getParentFile().mkdirs();
+
+        // If file doesn't exist, then create it
         if(!file.exists()){
             try {
                 file.createNewFile();

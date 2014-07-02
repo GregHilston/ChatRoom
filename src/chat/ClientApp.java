@@ -1,5 +1,7 @@
 package chat;
 
+import sun.net.ConnectionResetException;
+
 import java.io.*;
 import java.net.*;
 
@@ -63,7 +65,8 @@ public class ClientApp {
                 in.close();
                 connected = false;
             } catch(IOException e) {
-                e.printStackTrace();
+                System.err.println("ERROR: Lost connection to server");
+                System.exit(-1);
             }
         }
     }
@@ -87,7 +90,8 @@ public class ClientApp {
                 out.close();
                 stdIn.close();
             } catch(IOException e) {
-                e.printStackTrace();
+                System.err.println("ERROR: Lost connection to server");
+                System.exit(-1);
             }
         }
     }
