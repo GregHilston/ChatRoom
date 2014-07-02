@@ -6,6 +6,7 @@ public class Protocol {
     private static final int CHATTING = 2;
     private int state = WAITING;
     private String userName;
+    private int clientNumber;
 
     public String processInput(String input) {
         String output = null;
@@ -19,6 +20,7 @@ public class Protocol {
 
             if(ServerInfo.getInstance().addUserName(userName)) {
                 output = "Welcome to the chat room " + userName +  ".";
+                Logger.getInstance().log("Client " + clientNumber + " now known as " + userName);
 
                 if(ServerInfo.getInstance().numberOfUsers() > 1) { // 1 because this user's name has been stored already
                     output += " Other users chatting: ";
@@ -43,5 +45,9 @@ public class Protocol {
 
     public String getUserName() {
         return userName;
+    }
+
+    public void setClientNumber(int clientNumber) {
+        this.clientNumber = clientNumber;
     }
 }

@@ -7,10 +7,12 @@ public class ServerThread extends Thread {
     private Socket socket = null;
     private Protocol protocol;
     private PrintWriter out;
+    private int clientNumber;
 
-    public ServerThread(Socket socket) {
+    public ServerThread(Socket socket, int clientNumber) {
         super("ServerThread");
         this.socket = socket;
+        this.clientNumber = clientNumber;
     }
 
     public void run() {
@@ -19,6 +21,7 @@ public class ServerThread extends Thread {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String fromClient, fromServerThread;
             protocol = new Protocol();
+            protocol.setClientNumber(clientNumber);
             fromServerThread = protocol.processInput(null);
             out.println(fromServerThread); // Initial server message
 
@@ -34,7 +37,8 @@ public class ServerThread extends Thread {
             socket.close();
         } catch (SocketException e) {
             if(getUserName() != null) {
-                ServerInfo.getInstance().removeUserName(getUserName());
+                ServerInfo.getInstance().removeUserName(getUserName()); // Un-register this name
+                Broadcaster.getInstance().removeThread(this); // Remove ourselves from the list of running threads
             }
         } catch (IOException e) {
             e.printStackTrace();

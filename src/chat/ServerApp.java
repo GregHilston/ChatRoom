@@ -7,6 +7,7 @@ public class ServerApp {
     private int portNumber;
     private ServerSocket serverSocket;
     private Broadcaster broadcaster = Broadcaster.getInstance();
+    private int clientCount = 0;
 
     public ServerApp(int portNumber) {
         this.portNumber = portNumber;
@@ -17,13 +18,15 @@ public class ServerApp {
         try{
             serverSocket = new ServerSocket(portNumber);
             System.out.println("ServerApp listening on port: " + portNumber);
+            Logger.getInstance().createLogFile();
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Blocking call. Waits for client
-                ServerThread currentThread = new ServerThread(clientSocket);
+                ServerThread currentThread = new ServerThread(clientSocket, clientCount);
                 broadcaster.addThread(currentThread);
+                Logger.getInstance().log("Client " + clientCount + " connected from " + clientSocket.getRemoteSocketAddress().toString());
                 currentThread.start();
-                System.out.println("ClientApp connected");
+                clientCount++;
             }
         }catch (IOException e) {
             System.err.println("Could not listen on port " + portNumber);

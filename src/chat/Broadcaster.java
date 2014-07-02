@@ -6,7 +6,7 @@ public class Broadcaster {
     private static Broadcaster broadcaster = new Broadcaster();
     private ArrayList<ServerThread> serverThreads = new ArrayList<ServerThread>();
 
-    public Broadcaster() {
+    private Broadcaster() {
         // Singleton
     }
 
@@ -22,15 +22,16 @@ public class Broadcaster {
      * @param userName  User's name
      */
     public void broadcastMessage(String message, String userName) {
-        String formattedMessage = userName + ": " + message + "\n";
+        String formattedMessage = userName + ": " + message;
+        Logger.getInstance().log(formattedMessage);
 
         for(ServerThread t : serverThreads) {
             if(!t.getUserName().equals(userName)) {
-                System.out.println(message + " to " + t.getUserName());
-                t.print(formattedMessage);
+                t.print(formattedMessage + "\n");
             }
         }
     }
+
 
     /**
      *
@@ -39,4 +40,14 @@ public class Broadcaster {
     public void addThread(ServerThread currentThread) {
         serverThreads.add(currentThread);
     }
+
+
+    /**
+     *
+     * @param currentThread
+     */
+    public void removeThread(ServerThread currentThread) {
+        serverThreads.remove(currentThread);
+    }
+
 }

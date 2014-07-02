@@ -79,7 +79,7 @@ public class ClientApp {
                 while(connected) {
                     clientInput = stdIn.readLine();
                     if (clientInput != null) {
-                        System.out.println("Client: " + clientInput);
+                        // System.out.println("Client: " + clientInput);
                         out.println(clientInput);
                     }
                 }
