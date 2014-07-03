@@ -6,28 +6,34 @@ import java.io.*;
 public class ServerApp {
     private ServerSocket serverSocket;
     private Broadcaster broadcaster = Broadcaster.getInstance();
+    private ServerInfo serverInfo = ServerInfo.getInstance();
+    private Logger logger = Logger.getInstance();
+
 
     public ServerApp(int portNumber) {
-        ServerInfo.getInstance().setPortNumber(portNumber);
+        serverInfo.setPortNumber(portNumber);
     }
 
-
+    /***
+     * Starts running the server and spawns a new ServerThread for each new client connecting
+     */
     private void startAndListen() {
         try{
-            serverSocket = new ServerSocket(ServerInfo.getInstance().getPortNumber());
-            System.out.println("ServerApp listening on port: " + ServerInfo.getInstance().getPortNumber());
-            Logger.getInstance().createLogFile();
+            serverSocket = new ServerSocket(serverInfo.getPortNumber());
+
+            System.out.println("ServerApp started on " + serverInfo.getLocalIpAddress() + " listening on port: " + serverInfo.getPortNumber());
+            logger.createLogFile();
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Blocking call. Waits for client
-                ServerThread currentThread = new ServerThread(clientSocket, ServerInfo.getInstance().getClientCount());
+                ServerThread currentThread = new ServerThread(clientSocket, serverInfo.getClientCount());
                 broadcaster.addThread(currentThread);
-                Logger.getInstance().log("Client " + ServerInfo.getInstance().getClientCount() + " connected from " + clientSocket.getRemoteSocketAddress().toString());
+                logger.log("Client " + serverInfo.getClientCount() + " connected from " + clientSocket.getRemoteSocketAddress().toString());
                 currentThread.start();
-                ServerInfo.getInstance().setClientCount(ServerInfo.getInstance().getClientCount() + 1);
+                serverInfo.setClientCount(serverInfo.getClientCount() + 1);
             }
         }catch (IOException e) {
-            System.err.println("Could not listen on port " + ServerInfo.getInstance().getPortNumber());
+            System.err.println("Could not listen on port " + serverInfo.getPortNumber());
             System.exit(-1);
         }
     }

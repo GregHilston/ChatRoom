@@ -9,12 +9,17 @@ public class ServerThread extends Thread {
     private PrintWriter out;
     private int clientNumber;
 
+
     public ServerThread(Socket socket, int clientNumber) {
         super("ServerThread");
         this.socket = socket;
         this.clientNumber = clientNumber;
     }
 
+
+    /***
+     * Handles the interaction of the client with the server
+     */
     public void run() {
         try{
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -57,6 +62,9 @@ public class ServerThread extends Thread {
     }
 
 
+    /***
+     * @return      Wrapper for Protocol's returning of this client's username
+     */
     public String getUserName() {
         return protocol.getUserName();
     }

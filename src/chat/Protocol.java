@@ -8,6 +8,13 @@ public class Protocol {
     private String userName;
     private int clientNumber;
 
+
+    /***
+     * Processes the client's input, updating the client's current state and returning the Server's reply
+     *
+     * @param input     Client's input
+     * @return          Server's reply
+     */
     public String processInput(String input) {
         String output = null;
 
@@ -62,6 +69,12 @@ public class Protocol {
         return "Server: " + output;
     }
 
+
+    /***
+     * Shows the usage for the server commands
+     *
+     * @return      Formatted string of server commands
+     */
     private String usage() {
         String output = "Usage:";
         output += "\n\t/usage - List of server commands";
@@ -70,10 +83,22 @@ public class Protocol {
         return output;
     }
 
+
+    /***
+     * A client's name must be unique across all current connections to the server
+     *
+     * @return      This client's registered username
+     */
     public String getUserName() {
         return userName;
     }
 
+
+    /***
+     * A client's number is assigned in order of connection to the server
+     *
+     * @param clientNumber      This client's number
+     */
     public void setClientNumber(int clientNumber) {
         this.clientNumber = clientNumber;
     }
