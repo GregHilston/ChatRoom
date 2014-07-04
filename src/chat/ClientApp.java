@@ -8,11 +8,13 @@ public class ClientApp {
     private int portNumber;
     private Socket socket;
     private Boolean connected = false;
+    private ClientGui clientGui;
 
 
     public ClientApp(String hostName, int portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
+        this.clientGui = ClientGui.getInstance();
     }
 
 
