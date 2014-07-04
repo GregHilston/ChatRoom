@@ -62,4 +62,32 @@ public class Broadcaster {
         serverThreads.remove(currentThread);
     }
 
+
+    /***
+     * A message that is only intended for one user
+     *
+     * @param input     Contains the user the message is intended for and the message itself
+     * @return      "CHATTING" if the whisper was successfully sent or "[USERNAME] not currently online" for failure
+     */
+    protected String whisper(String input, String whisperer) {
+        String whisperMessage = input.substring(9); // Remove the leading "/whisper "
+        String[] split = whisperMessage.split(" "); // A single space seperates the user and the message
+        String userName = split[0];
+        String message = split[1];
+
+        if(!ServerInfo.getInstance().doesUserExist(userName)) {
+            return userName + " does not exist";
+        }
+
+        String formattedMessage = "(whisper) " + whisperer + ": " + message;
+        Logger.getInstance().log(formattedMessage + " to " + userName);
+
+        for(ServerThread t : serverThreads) {
+            if(t.getUserName().equals(userName)) {
+                t.print(formattedMessage + "\n");
+            }
+        }
+
+        return "CHATTING";
+    }
 }

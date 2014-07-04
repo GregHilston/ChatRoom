@@ -29,9 +29,9 @@ public class Protocol {
                 output = "Welcome to the chat room " + userName +  ". Type \"/usage\" for a list of commands";
                 Logger.getInstance().log("Client " + clientNumber + " now known as \"" + userName +"\"");
 
-                if(ServerInfo.getInstance().numberOfUsers() > 1) { // 1 because this user's name has been stored already
+                if(ServerInfo.getInstance().getNumberOfUsers() > 1) { // 1 because this user's name has been stored already
                     output += " Other users chatting: ";
-                    for(int userCounter = 0; userCounter < ServerInfo.getInstance().numberOfUsers(); userCounter++) {
+                    for(int userCounter = 0; userCounter < ServerInfo.getInstance().getNumberOfUsers(); userCounter++) {
                         if(!userName.equals(ServerInfo.getInstance().getUserName(userCounter))) {
                             output += ServerInfo.getInstance().getUserName(userCounter) + " ";
                         }
@@ -50,10 +50,13 @@ public class Protocol {
                 }
                 else if(input.equals("/list")) {
                     output = "List of logged in users: ";
-                    for(int userCounter = 0; userCounter < ServerInfo.getInstance().numberOfUsers(); userCounter++) {
+                    for(int userCounter = 0; userCounter < ServerInfo.getInstance().getNumberOfUsers(); userCounter++) {
                         output += ServerInfo.getInstance().getUserName(userCounter) + " ";
                     }
 
+                }
+                else if(input.startsWith("/whisper")) {
+                    output = Broadcaster.getInstance().whisper(input, userName);
                 }
                 else {
                     output = "Command not found \"" + input +"\" \n";
@@ -79,6 +82,7 @@ public class Protocol {
         String output = "Usage:";
         output += "\n\t/usage - List of server commands";
         output += "\n\t/list - List of logged in users";
+        output += "\n\t/whisper [userName] [message] - Send a private message to one user";
 
         return output;
     }

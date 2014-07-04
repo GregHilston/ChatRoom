@@ -60,7 +60,7 @@ public class ServerInfo {
      *
      * @return This count only increases, after a unique username has been accepted by the client
      */
-    protected int numberOfUsers() {
+    protected int getNumberOfUsers() {
         return userNames.size();
     }
 
@@ -150,5 +150,22 @@ public class ServerInfo {
      */
     protected void setClientCount(int clientCount) {
         this.clientCount = clientCount;
+    }
+
+
+    /***
+     * Checks to see if this user is currently on the server
+     *
+     * @param userName      User is question
+     * @return      true - yes      false - no
+     */
+    protected boolean doesUserExist(String userName) {
+        for(int userCounter = 0; userCounter < getNumberOfUsers(); userCounter++) {
+            if(userName.equals(getUserName(userCounter))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
