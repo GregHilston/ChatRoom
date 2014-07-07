@@ -2,21 +2,16 @@ package chat;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Observable;
 import javax.swing.*;
 
-public class ClientGui extends JFrame {
-    private static ClientGui clientGui = null;
+public class ClientGui {
+    JFrame frame;
 
-    private ClientGui() {
+    public ClientGui() {
+        frame = new JFrame();
         initComponents();
-    }
-
-    public static ClientGui getInstance() {
-        if(clientGui == null) {
-            clientGui = new ClientGui();
-        }
-
-        return clientGui;
+        frame.setVisible(true);
     }
 
     private void sendButtonActionPerformed(ActionEvent e) {
@@ -27,7 +22,6 @@ public class ClientGui extends JFrame {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner Evaluation license - Greg Hilston
         southPanel = new JPanel();
         inputField = new JTextField();
         sendButton = new JButton();
@@ -37,21 +31,12 @@ public class ClientGui extends JFrame {
         userListPane = new JTextPane();
 
         //======== this ========
-        setTitle("Chat Room");
-        setVisible(true);
-        Container contentPane = getContentPane();
+        frame.setTitle("Chat Room");
+        Container contentPane = frame.getContentPane();
         contentPane.setLayout(new BorderLayout());
 
         //======== southPanel ========
         {
-
-            // JFormDesigner evaluation mark
-            southPanel.setBorder(new javax.swing.border.CompoundBorder(
-                new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                    "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                    javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                    java.awt.Color.red), southPanel.getBorder())); southPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
             southPanel.setLayout(new FlowLayout());
 
             //---- inputField ----
@@ -95,13 +80,12 @@ public class ClientGui extends JFrame {
             eastPane.setViewportView(userListPane);
         }
         contentPane.add(eastPane, BorderLayout.EAST);
-        pack();
-        setLocationRelativeTo(getOwner());
+        frame.pack();
+        frame.setLocationRelativeTo(frame.getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner Evaluation license - Greg Hilston
     private JPanel southPanel;
     private JTextField inputField;
     private JButton sendButton;

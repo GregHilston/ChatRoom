@@ -86,7 +86,7 @@ public class ServerInfo {
      */
     protected String getLocalIpAddress() {
         String ipAddresses = "";
-        Enumeration enumeration = null;
+        Enumeration enumeration;
         try {
             enumeration = NetworkInterface.getNetworkInterfaces();
             while(enumeration.hasMoreElements()) {
@@ -95,10 +95,10 @@ public class ServerInfo {
 
                 while (ee.hasMoreElements()) {
                     InetAddress i = (InetAddress) ee.nextElement();
-                    if(i instanceof Inet4Address && !i.toString().contains("127")) // Filters all non-local IP addresses
-                        ipAddresses = i.getHostAddress();
+                    ipAddresses += i.getHostAddress() + " ";
                 }
             }
+
         } catch (SocketException e1) {
             e1.printStackTrace();
         }
@@ -113,7 +113,6 @@ public class ServerInfo {
 //            ipAddress = InetAddress.getLocalHost().toString();
 //        } catch (UnknownHostException e) {
 //            e.printStackTrace();
-//        }
 //
 //        return ipAddress;
 //    }
