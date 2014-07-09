@@ -51,7 +51,7 @@ public class Logger {
     /***
      * Returns the filename to be used for this Server's log file
      *
-     * @return
+     * @return  filename
      */
     private String getFileName() {
         int year = Calendar.getInstance().get(Calendar.YEAR);
