@@ -1,5 +1,7 @@
 package chat;
 
+import sun.font.FontLineMetrics;
+
 import java.net.*;
 import java.io.*;
 
@@ -7,13 +9,11 @@ public class ServerThread extends Thread {
     private Socket socket = null;
     private Protocol protocol;
     private PrintWriter out;
-    private int clientNumber;
-
 
     public ServerThread(Socket socket, int clientNumber) {
         super("ServerThread");
+        protocol = new Protocol(clientNumber);
         this.socket = socket;
-        this.clientNumber = clientNumber;
     }
 
 
@@ -25,8 +25,6 @@ public class ServerThread extends Thread {
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String fromClient, fromServerThread;
-            protocol = new Protocol();
-            protocol.setClientNumber(clientNumber);
             fromServerThread = protocol.processInput(null);
             out.println(fromServerThread); // Initial server message
 
@@ -41,8 +39,8 @@ public class ServerThread extends Thread {
             }
             socket.close();
         } catch (SocketException e) {
-            if(getUserName() != null) {
-                ServerInfo.getInstance().removeUserName(getUserName()); // Un-register this name
+            if(protocol.getUserName() != null) {
+                ServerInfo.getInstance().removeUserName(protocol.getUserName()); // Un-register this name
                 Broadcaster.getInstance().removeThread(this); // Remove ourselves from the list of running threads
                 Logger.getInstance().log(protocol.getUserName() + " has disconnected");
             }
@@ -63,7 +61,9 @@ public class ServerThread extends Thread {
 
 
     /***
-     * @return      Wrapper for Protocol's returning of this client's username
+     * Wrapper for Protocol's User's registered username
+     *
+     * @return      This protocol's user's username
      */
     public String getUserName() {
         return protocol.getUserName();

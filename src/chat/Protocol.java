@@ -5,8 +5,11 @@ public class Protocol {
     private static final int SENTNAMEREQUEST = 1;
     private static final int CHATTING = 2;
     private int state = WAITING;
-    private String userName;
-    private int clientNumber;
+    private User user;
+
+    public Protocol(int clientNumber) {
+        user = new User(clientNumber);
+    }
 
 
     /***
@@ -23,16 +26,16 @@ public class Protocol {
             state = SENTNAMEREQUEST;
         }
         else if(state == SENTNAMEREQUEST) {
-            userName = input;
+            user.setUserName(input);
 
-            if(ServerInfo.getInstance().addUserName(userName)) {
-                output = "Welcome to the chat room " + userName +  ". Type \"/usage\" for a list of commands";
-                Logger.getInstance().log("Client " + clientNumber + " now known as \"" + userName +"\"");
+            if(ServerInfo.getInstance().addUserName(getUserName())) {
+                output = "Welcome to the chat room " + getUserName() +  ". Type \"/usage\" for a list of commands";
+                Logger.getInstance().log("Client " + getClientNumber() + " now known as \"" + getUserName() +"\"");
 
                 if(ServerInfo.getInstance().getNumberOfUsers() > 1) { // 1 because this user's name has been stored already
                     output += " Other users chatting: ";
                     for(int userCounter = 0; userCounter < ServerInfo.getInstance().getNumberOfUsers(); userCounter++) {
-                        if(!userName.equals(ServerInfo.getInstance().getUserName(userCounter))) {
+                        if(!getUserName().equals(ServerInfo.getInstance().getUserName(userCounter))) {
                             output += ServerInfo.getInstance().getUserName(userCounter) + " ";
                         }
                     }
@@ -56,7 +59,7 @@ public class Protocol {
 
                 }
                 else if(input.startsWith("/whisper")) {
-                    output = Broadcaster.getInstance().whisper(input, userName);
+                    output = Broadcaster.getInstance().whisper(input, getUserName());
                 }
                 else {
                     output = "Command not found \"" + input +"\" \n";
@@ -66,7 +69,7 @@ public class Protocol {
             else {
 
                 output = "CHATTING";
-                Broadcaster.getInstance().broadcastMessage(input, userName);
+                Broadcaster.getInstance().broadcastMessage(input, getUserName());
             }
         }
         return "Server: " + output;
@@ -89,21 +92,21 @@ public class Protocol {
 
 
     /***
-     * A client's name must be unique across all current connections to the server
+     * Wrapper for this Protocol's User's getUserName method
      *
-     * @return      This client's registered username
+     * @return      This protocol's user's registered username
      */
     public String getUserName() {
-        return userName;
+        return user.getUserName();
     }
 
 
     /***
-     * A client's number is assigned in order of connection to the server
+     * Wrapper for this Protocol's User's getClientNumber method
      *
-     * @param clientNumber      This client's number
+     * @return      This protocol's user's client number
      */
-    public void setClientNumber(int clientNumber) {
-        this.clientNumber = clientNumber;
+    public int getClientNumber() {
+        return user.getClientNumber();
     }
 }

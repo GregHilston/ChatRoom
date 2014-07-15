@@ -27,11 +27,7 @@ public class ClientApp {
             }
         }
 
-
-        ClientGui chatView = new ClientGui();
-
-        Client chatController = new Client(hostName, portNumber);
-        chatController.connect();
-
+        Client client = new Client(hostName, portNumber);
+        client.connect();
     }
 }

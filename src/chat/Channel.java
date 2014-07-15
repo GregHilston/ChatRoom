@@ -9,6 +9,7 @@ public class Channel {
 
     public Channel(String channelName) {
         this.channelName = channelName;
+        this.numOfUsers = 0;
     }
 
 
