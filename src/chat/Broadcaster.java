@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Broadcaster {
     private static Broadcaster broadcaster = new Broadcaster();
-    private ArrayList<ServerThread> serverThreads = new ArrayList<ServerThread>();
 
 
     /***
@@ -35,7 +34,7 @@ public class Broadcaster {
         String formattedMessage = userName + ": " + message;
         Logger.getInstance().log(formattedMessage);
 
-        for(ServerThread t : serverThreads) {
+        for(ServerThread t : ServerApp.serverThreads) {
             if(!t.getUserName().equals(userName)) {
                 t.print(formattedMessage + "\n");
             }
@@ -44,32 +43,34 @@ public class Broadcaster {
 
 
     /**
-     * Adds the thread to the list of threads, for connected clients
+     * Prints the message to every other user whose chatting in the specified channel
      *
-     * @param currentThread     thread representing actively connected client
+     * @param channel       Channel user sent the message to
+     * @param message       Raw input from the user
+     * @param userName      User's name
      */
-    protected void addThread(ServerThread currentThread) {
-        serverThreads.add(currentThread);
-    }
+    protected void channelMessage(Channel channel, String message, String userName) {
+        String formattedMessage = userName + ": " + message;
+        Logger.getInstance().log(formattedMessage);
 
-
-    /**
-     * Removes the thread from the list of connected users, as this client has disconnected
-     *
-     * @param currentThread     thread representing client who disconnected
-     */
-    protected void removeThread(ServerThread currentThread) {
-        serverThreads.remove(currentThread);
+        for(ServerThread t : ServerApp.serverThreads) {
+            if(!t.getUserName().equals(userName)) {
+                t.print(formattedMessage + "\n");
+            }
+        }
     }
 
 
     /***
      * A message that is only intended for one user
      *
-     * @param input     Contains the user the message is intended for and the message itself
-     * @return      "CHATTING" if the whisper was successfully sent or "[USERNAME] not currently online" for failure
+     * @param message       String intended from sender to receiver
+     * @param sender        User that whispered the message
+     * @param receiver      User that is intended to receive the whispered message
+     * @return              "CHATTING" if the whisper was successfully sent or "[USERNAME] not currently online" for failure
      */
-    protected String whisper(String input, String whisperer) {
+    protected String whisper(String message, User sender, User receiver) {
+        /*
         String whisperMessage = input.substring(9); // Remove the leading "/whisper "
         String[] split = whisperMessage.split(" "); // A single space seperates the user and the message
         String userName = split[0];
@@ -80,14 +81,17 @@ public class Broadcaster {
         }
 
         String formattedMessage = "(whisper) " + whisperer + ": " + message;
-        Logger.getInstance().log(formattedMessage + " to " + userName);
+        */
 
-        for(ServerThread t : serverThreads) {
-            if(t.getUserName().equals(userName)) {
-                t.print(formattedMessage + "\n");
+        Logger.getInstance().log(sender + " whispered: " + message + " to " + receiver);
+
+        for(ServerThread t : ServerApp.serverThreads) {
+            if(t.getUserName().equals(receiver.getUserName())) {
+                t.print(sender + ": " + message + "\n");
+                return "CHATTING";
             }
         }
 
-        return "CHATTING";
+        return receiver.getUserName() + " does not exist";
     }
 }

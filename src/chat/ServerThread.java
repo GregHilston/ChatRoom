@@ -41,7 +41,7 @@ public class ServerThread extends Thread {
         } catch (SocketException e) {
             if(protocol.getUserName() != null) {
                 ServerInfo.getInstance().removeUserName(protocol.getUserName()); // Un-register this name
-                Broadcaster.getInstance().removeThread(this); // Remove ourselves from the list of running threads
+                ServerApp.removeThread(this); // Remove ourselves from the list of running threads
                 Logger.getInstance().log(protocol.getUserName() + " has disconnected");
             }
         } catch (IOException e) {
