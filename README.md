@@ -6,14 +6,15 @@ Java chat room, written to refamiliarize myself with basic thread operations and
 
 ### Features
 ========
-* Threaded server
-* Event and chat logging
-* Server commands
 
 
 ### To Do
 ========
+* Socket based server
+* Threaded
 * Server GUI (Just for practice)
 * Client GUI
 * Private messages
 * Separate rooms/channels
+* Event and chat logging
+* Server commands
