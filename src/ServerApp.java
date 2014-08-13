@@ -3,6 +3,10 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.util.Enumeration;
 
+/***
+ * The Chat server that users join channels to speak to one another
+ */
+
 public class ServerApp {
     private ServerSocket serverSocket;
     private int portNumber;
@@ -10,6 +14,7 @@ public class ServerApp {
     public ServerApp(int portNumber) {
         this.portNumber = portNumber;
     }
+
 
     /***
      * Starts running the server and spawns a new ServerThread for each new client connecting
@@ -33,9 +38,9 @@ public class ServerApp {
 
 
     /***
-     * Gets just the local ip address used by the server
+     * Gets all ip addresses used by the server
      *
-     * @return      Local ip address
+     * @return      Ip addresses
      */
     private String getIpAddresses() {
         String ipAddresses = "";

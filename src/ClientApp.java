@@ -1,6 +1,10 @@
 import java.io.*;
 import java.net.*;
 
+/***
+ * Application that end user interacts with.
+ */
+
 public class ClientApp {
     private String hostName;
     private int portNumber;
@@ -27,7 +31,6 @@ public class ClientApp {
             clientThread.start();
 
             connected = true;
-            // socket.close();
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
