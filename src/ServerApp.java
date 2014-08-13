@@ -10,6 +10,7 @@ import java.util.Enumeration;
 public class ServerApp {
     private ServerSocket serverSocket;
     private int portNumber;
+    private ChannelManager channelManager = new ChannelManager("Lobby");
 
     public ServerApp(int portNumber) {
         this.portNumber = portNumber;
@@ -23,12 +24,13 @@ public class ServerApp {
         try{
             serverSocket = new ServerSocket(portNumber);
 
-            System.out.println("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber);
+            System.out.println("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber); // TODO: Change to logging
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Blocking call. Waits for client
-                System.out.println("Client connected");
-                // TODO: Here is where the ChannelManager's default Channel would get a new ServerThread for the newly connected user
+                SocketAddress clientIp = clientSocket.getRemoteSocketAddress();
+                System.out.println("Client connected from " + clientIp); // TODO: Change to logging
+                channelManager.addUser(clientSocket, clientIp);
             }
         }catch (IOException e) {
             System.err.println("Could not listen on port " + portNumber);
