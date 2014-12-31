@@ -2,7 +2,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 
-/**
+/***
  * Managers all the Channels on the server.
  */
 

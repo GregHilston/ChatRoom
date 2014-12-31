@@ -24,20 +24,55 @@ public class ServerApp {
         try{
             serverSocket = new ServerSocket(portNumber);
 
-            System.out.println("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber); // TODO: Change to logging
+            System.out.println("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber);
+            Logger.writeMessage("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Blocking call. Waits for client
                 SocketAddress clientIp = clientSocket.getRemoteSocketAddress();
-                System.out.println("Client connected from " + clientIp); // TODO: Change to logging
+                System.out.println("Client connected from " + clientIp);
+                Logger.writeMessage("Client connected from " + clientIp);
                 channelManager.addUser(clientSocket, clientIp);
+
+                Thread clientThread = new Thread(new HandleClientReply(clientSocket));
+                clientThread.start();
             }
         }catch (IOException e) {
             System.err.println("Could not listen on port " + portNumber);
+            Logger.writeMessage("Could not listen on port " + portNumber);
             System.exit(-1);
         }
     }
 
+    /***
+     * Handles the reply from a client and any loss of connection to the server.
+     */
+    private class HandleClientReply implements Runnable {
+        Socket clientSocket;
+
+        public HandleClientReply(Socket clientSocket) {
+            this.clientSocket = clientSocket;
+        }
+
+        public void run() {
+            try {
+                PrintWriter serverOut = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                String fromClient;
+
+                serverOut.println("Enter a name: ");
+                // TODO: Handle unique name input
+
+                while ((fromClient = in.readLine()) != null) {
+                    System.out.println(fromClient);
+                }
+
+                in.close();
+            } catch(IOException e) {
+                System.err.println("ERROR: Lost connection to client");
+            }
+        }
+    }
 
     /***
      * Gets all ip addresses used by the server

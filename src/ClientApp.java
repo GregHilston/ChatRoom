@@ -8,8 +8,10 @@ import java.net.*;
 public class ClientApp {
     private String hostName;
     private int portNumber;
-    private Socket socket;
+    private Socket serverSocket;
     private Boolean connected = false;
+    private OutputStream outstream;
+    private PrintWriter out;
 
     public ClientApp(String hostName, int portNumber) {
         this.hostName = hostName;
@@ -22,7 +24,10 @@ public class ClientApp {
      */
     protected void connect() {
         try{
-            socket = new Socket(hostName, portNumber);
+            serverSocket = new Socket(hostName, portNumber);
+            outstream  = serverSocket.getOutputStream();
+            out = new PrintWriter(outstream);
+            out.println("Test");
 
             Thread serverThread = new Thread(new HandleServerReply());
             serverThread.start();
@@ -42,19 +47,17 @@ public class ClientApp {
 
 
     /***
-     * Handles the reply form the server and any loss of connection to the server.
+     * Handles the reply from the server and any loss of connection to the server.
      */
     private class HandleServerReply implements Runnable {
-
         public void run() {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
                 String fromServer;
 
                 while ((fromServer = in.readLine()) != null) {
-                    if(!fromServer.equals("Server: CHATTING")) { // Filter the end state message
-                        System.out.println(fromServer);
-                    }
+                    System.out.println(fromServer);
+                    // TODO: Implement and handle server replies
                 }
 
                 in.close();
@@ -71,22 +74,21 @@ public class ClientApp {
      * Handles the client's input and sending it to the Server
      */
     private class HandleClientInput implements Runnable {
-
         public void run() {
             try {
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true);
                 BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
                 String clientInput;
 
                 while(connected) {
                     clientInput = stdIn.readLine();
                     if (clientInput != null) {
-                        // System.out.println("Client: " + clientInput);
-                        out.println(clientInput);
+                        //System.out.println("Client: " + clientInput);
+                        clientOut.println(clientInput);
                     }
                 }
 
-                out.close();
+                clientOut.close();
                 stdIn.close();
             } catch(IOException e) {
                 System.err.println("ERROR: Lost connection to server");

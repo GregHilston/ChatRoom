@@ -19,7 +19,7 @@ public class Logger {
      *
      * @param message   the message to be printed to the log file
      */
-    static void writeMessage( String message ) {
+    static void writeMessage(String message) {
 
         // append to the end of the file (time): [message]
         try {
@@ -31,8 +31,6 @@ public class Logger {
         catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
