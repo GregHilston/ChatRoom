@@ -10,6 +10,7 @@ public class ChannelManager {
     private ArrayList<Channel> channels = new ArrayList<Channel>();
     private final int DEFAULTCHANNEL = 0;
 
+
     public ChannelManager(String defaultChannelName) {
         channels.add(new Channel(defaultChannelName));
     }
@@ -38,12 +39,18 @@ public class ChannelManager {
         private String channelName;
         private ArrayList<User> users = new ArrayList<User>();
 
+
         public Channel(String channelName) {
             this.channelName = channelName;
         }
 
+
         private void addUser(Socket userSocket, SocketAddress ipAddress) {
             users.add(new User(userSocket, ipAddress));
+        }
+
+        private String getChannelName() {
+            return channelName;
         }
     }
 }

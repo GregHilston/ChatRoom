@@ -12,6 +12,7 @@ public class ServerApp {
     private int portNumber;
     private ChannelManager channelManager = new ChannelManager("Lobby");
 
+
     public ServerApp(int portNumber) {
         this.portNumber = portNumber;
     }
@@ -44,15 +45,18 @@ public class ServerApp {
         }
     }
 
+
     /***
      * Handles the reply from a client and any loss of connection to the server.
      */
     private class HandleClientReply implements Runnable {
-        Socket clientSocket;
+        private Socket clientSocket;
+
 
         public HandleClientReply(Socket clientSocket) {
             this.clientSocket = clientSocket;
         }
+
 
         public void run() {
             try {
@@ -73,6 +77,7 @@ public class ServerApp {
             }
         }
     }
+
 
     /***
      * Gets all ip addresses used by the server

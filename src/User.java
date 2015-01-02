@@ -10,6 +10,7 @@ public class User {
     private SocketAddress ipAddress;
     private Socket userSocket = new Socket();
 
+
     public User(Socket userSocket, SocketAddress ipAddress) {
         this.userSocket = userSocket;
         this.ipAddress = ipAddress;

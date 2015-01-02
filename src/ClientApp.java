@@ -13,6 +13,7 @@ public class ClientApp {
     private OutputStream outstream;
     private PrintWriter out;
 
+
     public ClientApp(String hostName, int portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;

@@ -1,7 +1,4 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Calendar;
 
 /***
@@ -15,35 +12,14 @@ public class Logger {
 
 
     /***
-     * Writes the message to the log file, prefaced with the current time
-     *
-     * @param message   the message to be printed to the log file
-     */
-    static void writeMessage(String message) {
-
-        // append to the end of the file (time): [message]
-        try {
-            FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
-            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-            bufferWritter.write(message + "\n");
-            bufferWritter.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /***
      * Creates the "Logs" directory if does not already exist and creates the log file for this server's lifetime.
      * If the server already ran on this day, the new logfile will just append to the first one.
      */
-    public static void createLogFile(String message) {
+    public static void createLogFile() {
         // If directory doesn't exist, then create it
         if(!dir.exists()) {
             dir.mkdir();
         }
-
 
         // If file doesn't exist, then create it
         if(!fullPathToNewFile.exists()){
@@ -53,8 +29,30 @@ public class Logger {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
+    }
 
-        Logger.writeMessage(message);
+
+    /***
+     * Writes the message to the log file, prefaced with the current time
+     *
+     * @param message   the message to be printed to the log file
+     */
+    public static void writeMessage(String message) {
+        // append to the end of the file (time): [message]
+        try {
+            FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+            bufferWritter.write(message + "\n");
+            bufferWritter.close();
+        }
+        catch(FileNotFoundException e) { // Missing logs folder
+            createLogFile();
+            writeMessage("Warning: log folder was missing, creating folder now");
+            writeMessage(message);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -69,12 +67,5 @@ public class Logger {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 
         return month + "_" + day + "_" + year + ".log";
-    }
-
-
-    public static void main(String[] args) {
-        // testing
-        Logger.createLogFile("test.log");
-        Logger.writeMessage("Hello World");
     }
 }
