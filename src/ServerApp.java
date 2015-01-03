@@ -2,6 +2,7 @@ import java.net.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /***
  * The Chat server that users join channels to speak to one another
@@ -11,6 +12,7 @@ public class ServerApp {
     private ServerSocket serverSocket;
     private int portNumber;
     private ChannelManager channelManager = new ChannelManager("Lobby");
+    private static Hashtable names = new Hashtable(); // TODO: Possibly use a HashMap, as they're faster for non parallel
 
 
     public ServerApp(int portNumber) {
@@ -33,7 +35,6 @@ public class ServerApp {
                 SocketAddress clientIp = clientSocket.getRemoteSocketAddress();
                 System.out.println("Client connected from " + clientIp);
                 Logger.writeMessage("Client connected from " + clientIp);
-                channelManager.addUser(clientSocket, clientIp);
 
                 Thread clientThread = new Thread(new HandleClientReply(clientSocket));
                 clientThread.start();
@@ -47,10 +48,29 @@ public class ServerApp {
 
 
     /***
+     * Checks if an entered username is unique on this server
+     *
+     * @return false    non-unique username
+     * @return true    unique username
+     */
+    private static boolean uniqueUsername(String name) {
+        name = name.toLowerCase();
+
+        if(names.contains(name)) {
+            return false;
+        }
+
+        names.put(name, name); // TODO: Use a different key
+        return true;
+    }
+
+
+    /***
      * Handles the reply from a client and any loss of connection to the server.
      */
     private class HandleClientReply implements Runnable {
         private Socket clientSocket;
+        private boolean uniqueName = false;
 
 
         public HandleClientReply(Socket clientSocket) {
@@ -59,21 +79,35 @@ public class ServerApp {
 
 
         public void run() {
+            String fromClient;
+            String name = "Unnamed User";
+
             try {
                 PrintWriter serverOut = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String fromClient;
 
                 serverOut.println("Enter a name: ");
-                // TODO: Handle unique name input
-
                 while ((fromClient = in.readLine()) != null) {
-                    System.out.println(fromClient);
+                    if(!uniqueName) {
+                        // fromClient is a proposed username
+                        if(uniqueUsername(fromClient)) {
+                            uniqueName = true;
+                            name = fromClient;
+                            channelManager.addUser(name, clientSocket);
+                            serverOut.println("Welcome to \"" + channelManager.getDefaultChannelName() + "\"");
+                        }
+                        else {
+                            serverOut.println("That username is already in use, please try another username.");
+                        }
+                    }
+                    else {
+                        channelManager.messageAllUsers(name + ": " + fromClient);
+                    }
                 }
 
                 in.close();
             } catch(IOException e) {
-                System.err.println("ERROR: Lost connection to client");
+                Logger.writeMessage("ERROR: Lost connection to \"" + name + "\"");
             }
         }
     }
