@@ -9,11 +9,9 @@ import java.util.ArrayList;
 public class ChannelManager {
     private ArrayList<Channel> channels = new ArrayList<Channel>();
     private final int DEFAULTCHANNEL = 0;
-    private String defaultChannelName;
 
 
     public ChannelManager(String defaultChannelName) {
-        this.defaultChannelName = defaultChannelName;
         channels.add(new Channel(defaultChannelName));
     }
 
@@ -21,11 +19,10 @@ public class ChannelManager {
     /***
      * Hands off the creation of the User to the default channel
      *
-     * @param userSocket    Socket for this User
-     * @param ipAddress     IP address for this user
+     * @param user  user to add
      */
-    public void addUser(String name, Socket userSocket) {
-        channels.get(DEFAULTCHANNEL).addUser(name, userSocket);
+    public void addUser(User user) {
+        channels.get(DEFAULTCHANNEL).addUser(user);
     }
 
 
@@ -33,8 +30,9 @@ public class ChannelManager {
         return channels;
     }
 
-    public String getDefaultChannelName() {
-        return defaultChannelName;
+
+    public Channel getDefaultChannel() {
+        return channels.get(DEFAULTCHANNEL);
     }
 
 
@@ -42,26 +40,38 @@ public class ChannelManager {
      * A chat Channel, responsible for holding users
      */
     public class Channel {
-        private String channelName;
+        private String name;
         private ArrayList<User> users = new ArrayList<User>();
 
-        public Channel(String channelName) {
-            this.channelName = channelName;
+        public Channel(String name) {
+            this.name = name;
         }
 
 
-        public void addUser(String name, Socket userSocket) {
-            users.add(new User(name, userSocket));
+        /***
+         * Add a user to this channel
+         *
+         * @param user  the user to add to the channel
+         */
+        public void addUser(User user) {
+            users.add(user);
         }
 
 
-        public String getChannelName() {
-            return channelName;
+        public String getName() {
+            return name;
+        }
+
+
+        public int getNumberOfUsers() {
+            return users.size();
         }
     }
 
 
     public void messageAllUsers(String message) {
+        Logger.writeMessage(message);
+
         for(Channel c : channels) {
             for(User user : c.users) {
                 user.writeMessage(message);

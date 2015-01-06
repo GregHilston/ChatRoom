@@ -27,20 +27,17 @@ public class ServerApp {
         try{
             serverSocket = new ServerSocket(portNumber);
 
-            System.out.println("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber);
             Logger.writeMessage("ServerApp started on " + getIpAddresses() + " listening on port: " + portNumber);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept(); // Blocking call. Waits for client
                 SocketAddress clientIp = clientSocket.getRemoteSocketAddress();
-                System.out.println("Client connected from " + clientIp);
                 Logger.writeMessage("Client connected from " + clientIp);
 
                 Thread clientThread = new Thread(new HandleClientReply(clientSocket));
                 clientThread.start();
             }
         }catch (IOException e) {
-            System.err.println("Could not listen on port " + portNumber);
             Logger.writeMessage("Could not listen on port " + portNumber);
             System.exit(-1);
         }
@@ -93,8 +90,10 @@ public class ServerApp {
                         if(uniqueUsername(fromClient)) {
                             uniqueName = true;
                             name = fromClient;
-                            channelManager.addUser(name, clientSocket);
-                            serverOut.println("Welcome to \"" + channelManager.getDefaultChannelName() + "\"");
+                            User user = new User(name, clientSocket);
+                            channelManager.addUser(user);
+                            serverOut.println("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                            Logger.writeMessage(user.getIpAndPort() + " now known as " + name);
                         }
                         else {
                             serverOut.println("That username is already in use, please try another username.");

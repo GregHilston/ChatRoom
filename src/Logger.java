@@ -43,6 +43,7 @@ public class Logger {
             FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
             bufferWritter.write(message + "\n");
+            System.out.println(message); // TODO: remove this for final build
             bufferWritter.close();
         }
         catch(FileNotFoundException e) { // Missing logs folder
