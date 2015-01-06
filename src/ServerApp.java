@@ -47,20 +47,29 @@ public class ServerApp {
     /***
      * Checks if an entered username is unique on this server
      *
-     * @return false    non-unique username
+     * @param name     name to check
+     * @return false   non-unique username
      * @return true    unique username
      */
     private static boolean uniqueUsername(String name) {
-        name = name.toLowerCase();
-
-        if(names.contains(name)) {
+        if(names.contains(name.toLowerCase())) {
             return false;
         }
 
-        names.put(name, name); // TODO: Use a different key
         return true;
     }
 
+
+    /***
+     * Checks if an entered username is composed of only alphanumeric characters
+     *
+     * @param name      name to check
+     * @return false    name contains nonalpha numeric characters
+     * @return true     name contains only alphanumeric characters
+     */
+    private static boolean alphaNumericOnly(String name) {
+        return name.matches("^.*[^a-zA-Z0-9].*$"); // Regex
+    }
 
     /***
      * Handles the reply from a client and any loss of connection to the server.
@@ -87,16 +96,20 @@ public class ServerApp {
                 while ((fromClient = in.readLine()) != null) {
                     if(!uniqueName) {
                         // fromClient is a proposed username
-                        if(uniqueUsername(fromClient)) {
+                        if(!uniqueUsername(fromClient)) {
+                            serverOut.println("That username is already in use, please try another username.");
+                        }
+                        if(alphaNumericOnly(fromClient)) {
+                            serverOut.println("That username contains illegal non-alphanumeric character(s), please try another username.");
+                        }
+                        else { // Valid username
                             uniqueName = true;
                             name = fromClient;
+                            names.put(name.toLowerCase(), name.toLowerCase()); // TODO: Use a different key
                             User user = new User(name, clientSocket);
-                            channelManager.addUser(user);
-                            serverOut.println("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                                                    channelManager.addUser(user);
+                                                    serverOut.println("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
                             Logger.writeMessage(user.getIpAndPort() + " now known as " + name);
-                        }
-                        else {
-                            serverOut.println("That username is already in use, please try another username.");
                         }
                     }
                     else {
