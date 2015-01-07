@@ -42,8 +42,8 @@ public class Logger {
         try {
             FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-            bufferWritter.write(message + "\n");
-            System.out.println(message); // TODO: remove this for final build
+            bufferWritter.write(getTimeStamp() + message + "\n");
+            System.out.println(getTimeStamp() + message); // TODO: remove this for final build
             bufferWritter.close();
         }
         catch(FileNotFoundException e) { // Missing logs folder
@@ -57,6 +57,22 @@ public class Logger {
     }
 
 
+    /***
+     * Gets the time stamp for logging and printing
+     *
+     * @return  time stamp
+     */
+    public static String getTimeStamp() {
+        Calendar time = Calendar.getInstance();
+        int hourOfDay = time.get(Calendar.HOUR_OF_DAY);
+        int minute = time.get(Calendar.MINUTE);
+        int second = time.get(Calendar.SECOND);
+        int am_pm = time.get(Calendar.AM_PM);
+        
+        return "(" + hourOfDay + ":" + minute + ":" + second + " " + (am_pm == Calendar.AM ? "AM" : "PM") + ") ";
+    }
+    
+    
     /***
      * Returns the filename to be used for this Server's log file
      *

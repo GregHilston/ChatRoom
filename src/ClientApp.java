@@ -48,12 +48,28 @@ public class ClientApp {
 
 
     /***
+     * Client gracefully disconnecting
+     */
+    protected void disconnect() {
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            Logger.writeMessage("serverSocket could not be closed");
+        }
+    }
+
+
+    protected Socket getServerSocket() {
+        return serverSocket;
+    }
+    
+    
+    /***
      * Handles the reply from the server and any loss of connection to the server.
      */
     private class HandleServerReply implements Runnable {
         public void run() {
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
                 String fromServer;
 
                 while ((fromServer = in.readLine()) != null) {
@@ -61,7 +77,6 @@ public class ClientApp {
                     // TODO: Implement and handle server replies
                 }
 
-                in.close();
                 connected = false;
             } catch(IOException e) {
                 System.err.println("ERROR: Lost connection to server");
@@ -76,21 +91,18 @@ public class ClientApp {
      */
     private class HandleClientInput implements Runnable {
         public void run() {
-            try {
+            try(BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
                 PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true);
-                BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
                 String clientInput;
 
                 while(connected) {
                     clientInput = stdIn.readLine();
                     if (clientInput != null) {
-                        //System.out.println("Client: " + clientInput);
                         clientOut.println(clientInput);
                     }
                 }
 
                 clientOut.close();
-                stdIn.close();
             } catch(IOException e) {
                 System.err.println("ERROR: Lost connection to server");
                 System.exit(-1);

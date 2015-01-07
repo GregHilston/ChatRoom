@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketAddress;
 
 /***
  * Object representation of the client on our ChatRoom
@@ -33,7 +32,7 @@ public class User {
      * @param message   message to write
      */
     public void writeMessage(String message) {
-        printWriter.println(message);
+        printWriter.println(Logger.getTimeStamp() + message);
     }
 
 

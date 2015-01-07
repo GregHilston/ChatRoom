@@ -23,7 +23,7 @@ public class ServerApp {
     /***
      * Starts running the server and spawns a new ServerThread for each new client connecting
      */
-    private void startAndListen() {
+    protected void startAndListen() {
         try{
             serverSocket = new ServerSocket(portNumber);
 
@@ -88,19 +88,19 @@ public class ServerApp {
             String fromClient;
             String name = "Unnamed User";
 
-            try {
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
                 PrintWriter serverOut = new PrintWriter(clientSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 serverOut.println("Enter a name: ");
                 while ((fromClient = in.readLine()) != null) {
                     if(!uniqueName) {
                         // fromClient is a proposed username
-                        if(!uniqueUsername(fromClient)) {
-                            serverOut.println("That username is already in use, please try another username.");
-                        }
+
                         if(alphaNumericOnly(fromClient)) {
                             serverOut.println("That username contains illegal non-alphanumeric character(s), please try another username.");
+                        }
+                        else if(!uniqueUsername(fromClient)) {
+                            serverOut.println("That username is already in use, please try another username.");
                         }
                         else { // Valid username
                             uniqueName = true;
@@ -108,7 +108,7 @@ public class ServerApp {
                             names.put(name.toLowerCase(), name.toLowerCase()); // TODO: Use a different key
                             User user = new User(name, clientSocket);
                                                     channelManager.addUser(user);
-                                                    serverOut.println("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                                                    user.writeMessage("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
                             Logger.writeMessage(user.getIpAndPort() + " now known as " + name);
                         }
                     }
@@ -116,9 +116,7 @@ public class ServerApp {
                         channelManager.messageAllUsers(name + ": " + fromClient);
                     }
                 }
-
-                in.close();
-            } catch(IOException e) {
+            } catch(Throwable t) {
                 Logger.writeMessage("ERROR: Lost connection to \"" + name + "\"");
             }
         }
