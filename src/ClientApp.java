@@ -1,7 +1,10 @@
-import java.io.*;
-import java.net.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
-/***
+/**
  * Application that end user interacts with.
  */
 
@@ -10,8 +13,6 @@ public class ClientApp {
     private int portNumber;
     private Socket serverSocket;
     private Boolean connected = false;
-    private OutputStream outstream;
-    private PrintWriter out;
 
 
     public ClientApp(String hostName, int portNumber) {
@@ -20,15 +21,12 @@ public class ClientApp {
     }
 
 
-    /***
+    /**
      * Client attempting to connect to the ChatRoom's ServerApp
      */
     protected void connect() {
-        try{
+        try {
             serverSocket = new Socket(hostName, portNumber);
-            outstream  = serverSocket.getOutputStream();
-            out = new PrintWriter(outstream);
-            out.println("Test");
 
             Thread serverThread = new Thread(new HandleServerReply());
             serverThread.start();
@@ -47,7 +45,7 @@ public class ClientApp {
     }
 
 
-    /***
+    /**
      * Client gracefully disconnecting
      */
     protected void disconnect() {
@@ -62,49 +60,51 @@ public class ClientApp {
     protected Socket getServerSocket() {
         return serverSocket;
     }
-    
-    
-    /***
+
+
+    /**
      * Handles the reply from the server and any loss of connection to the server.
      */
     private class HandleServerReply implements Runnable {
         public void run() {
-            try(BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
+            try (DataInputStream in = new DataInputStream(serverSocket.getInputStream())) {
                 String fromServer;
 
-                while ((fromServer = in.readLine()) != null) {
+                while ((fromServer = in.readUTF()) != null) {
                     System.out.println(fromServer);
                     // TODO: Implement and handle server replies
                 }
 
                 connected = false;
-            } catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println("ERROR: Lost connection to server");
+                e.printStackTrace();
                 System.exit(-1);
             }
         }
     }
 
 
-    /***
+    /**
      * Handles the client's input and sending it to the Server
      */
     private class HandleClientInput implements Runnable {
         public void run() {
-            try(BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
-                PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true);
-                String clientInput;
+            try (DataInputStream stdIn = new DataInputStream(System.in);
+                 DataOutputStream clientOut = new DataOutputStream(serverSocket.getOutputStream())) {
 
-                while(connected) {
-                    clientInput = stdIn.readLine();
+                String clientInput;
+                while (connected) {
+                    clientInput = stdIn.readUTF();
                     if (clientInput != null) {
-                        clientOut.println(clientInput);
+                        clientOut.writeUTF(clientInput);
                     }
                 }
 
                 clientOut.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println("ERROR: Lost connection to server");
+                e.printStackTrace();
                 System.exit(-1);
             }
         }
@@ -120,11 +120,11 @@ public class ClientApp {
             portNumber = Integer.parseInt(args[1]);
         }
         else{
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+            DataInputStream stdIn = new DataInputStream(System.in);
 
             try {
                 System.out.print("Please enter the server's ip address: ");
-                hostName = stdIn.readLine();
+                hostName = stdIn.readUTF();
 
                 System.out.print("Please enter the server's port number: ");
                 portNumber = Integer.parseInt(stdIn.readLine());

@@ -1,7 +1,8 @@
 import java.io.*;
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-/***
+/**
  * Create a log file called [mm-dd-yyyy].log in the folder logs
  */
 
@@ -11,78 +12,65 @@ public class Logger {
     private static File fullPathToNewFile = new File(dir.toString() + "/" + file.toString());
 
 
-    /***
+    /**
      * Creates the "Logs" directory if does not already exist and creates the log file for this server's lifetime.
      * If the server already ran on this day, the new logfile will just append to the first one.
      */
     public static void createLogFile() {
         // If directory doesn't exist, then create it
-        if(!dir.exists()) {
-            dir.mkdir();
-        }
-
-        // If file doesn't exist, then create it
-        if(!fullPathToNewFile.exists()){
-            try {
-                fullPathToNewFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        if (dir.exists() || dir.mkdir()) {
+            // If file doesn't exist, then create it
+            if (!fullPathToNewFile.exists()) {
+                try {
+                    fullPathToNewFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
         }
     }
 
 
-    /***
+    /**
      * Writes the message to the log file, prefaced with the current time
      *
-     * @param message   the message to be printed to the log file
+     * @param message the message to be printed to the log file
      */
     public static void writeMessage(String message) {
         // append to the end of the file (time): [message]
         try {
             FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-            bufferWritter.write(getTimeStamp() + message + "\n");
+            bufferWritter.write(getTimeStamp() + message);
+            bufferWritter.newLine();
             System.out.println(getTimeStamp() + message); // TODO: remove this for final build
             bufferWritter.close();
-        }
-        catch(FileNotFoundException e) { // Missing logs folder
+        } catch (FileNotFoundException e) { // Missing logs folder
             createLogFile();
             writeMessage("Warning: log folder was missing, creating folder now");
             writeMessage(message);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    /***
+    /**
      * Gets the time stamp for logging and printing
      *
-     * @return  time stamp
+     * @return time stamp
      */
     public static String getTimeStamp() {
-        Calendar time = Calendar.getInstance();
-        int hourOfDay = time.get(Calendar.HOUR_OF_DAY);
-        int minute = time.get(Calendar.MINUTE);
-        int second = time.get(Calendar.SECOND);
-        int am_pm = time.get(Calendar.AM_PM);
-        
-        return "(" + hourOfDay + ":" + minute + ":" + second + " " + (am_pm == Calendar.AM ? "AM" : "PM") + ") ";
+        return new SimpleDateFormat("h:mm:ss a ").format(new Date());
     }
-    
-    
-    /***
+
+
+    /**
      * Returns the filename to be used for this Server's log file
      *
-     * @return  filename
+     * @return filename
      */
     public static String getFileName() {
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        int month = Calendar.getInstance().get(Calendar.MONTH); // Note: zero based!
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-
-        return month + "_" + day + "_" + year + ".log";
+        return new SimpleDateFormat("MM_dd_yyyy").format(new Date()) + ".log";
     }
 }

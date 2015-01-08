@@ -1,8 +1,6 @@
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 
-/***
+/**
  * Managers all the Channels on the server.
  */
 
@@ -16,10 +14,10 @@ public class ChannelManager {
     }
 
 
-    /***
+    /**
      * Hands off the creation of the User to the default channel
      *
-     * @param user  user to add
+     * @param user user to add
      */
     public void addUser(User user) {
         channels.get(DEFAULTCHANNEL).addUser(user);
@@ -36,7 +34,7 @@ public class ChannelManager {
     }
 
 
-    /***
+    /**
      * A chat Channel, responsible for holding users
      */
     public class Channel {
@@ -48,10 +46,10 @@ public class ChannelManager {
         }
 
 
-        /***
+        /**
          * Add a user to this channel
          *
-         * @param user  the user to add to the channel
+         * @param user the user to add to the channel
          */
         public void addUser(User user) {
             users.add(user);
@@ -72,8 +70,8 @@ public class ChannelManager {
     public void messageAllUsers(String message) {
         Logger.writeMessage(message);
 
-        for(Channel c : channels) {
-            for(User user : c.users) {
+        for (Channel c : channels) {
+            for (User user : c.users) {
                 user.writeMessage(message);
             }
         }
