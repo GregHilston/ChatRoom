@@ -8,11 +8,9 @@ public class ChannelManager {
     private ArrayList<Channel> channels = new ArrayList<Channel>();
     private final int DEFAULTCHANNEL = 0;
 
-
     public ChannelManager(String defaultChannelName) {
         channels.add(new Channel(defaultChannelName));
     }
-
 
     /**
      * Hands off the creation of the User to the default channel
@@ -23,16 +21,13 @@ public class ChannelManager {
         channels.get(DEFAULTCHANNEL).addUser(user);
     }
 
-
     public ArrayList<Channel> getChannels() {
         return channels;
     }
 
-
     public Channel getDefaultChannel() {
         return channels.get(DEFAULTCHANNEL);
     }
-
 
     /**
      * A chat Channel, responsible for holding users
@@ -45,7 +40,6 @@ public class ChannelManager {
             this.name = name;
         }
 
-
         /**
          * Add a user to this channel
          *
@@ -55,17 +49,14 @@ public class ChannelManager {
             users.add(user);
         }
 
-
         public String getName() {
             return name;
         }
-
 
         public int getNumberOfUsers() {
             return users.size();
         }
     }
-
 
     public void messageAllUsers(String message) {
         Logger.writeMessage(message);

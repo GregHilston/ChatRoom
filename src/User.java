@@ -1,5 +1,6 @@
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
@@ -9,20 +10,18 @@ import java.net.Socket;
 public class User {
     private String name;
     private String ipAndPort;
-    private DataOutputStream printWriter;
-
+    private PrintWriter printWriter;
 
     public User(String name, Socket userSocket) {
         this.name = name;
         this.ipAndPort = userSocket.getInetAddress() + ":" + userSocket.getPort();
 
         try {
-            printWriter = new DataOutputStream(userSocket.getOutputStream());
+            printWriter = new PrintWriter(userSocket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Writes a message to this user's screen
@@ -30,19 +29,12 @@ public class User {
      * @param message message to write
      */
     public void writeMessage(String message) {
-        try {
-            printWriter.writeUTF(Logger.getTimeStamp() + message);
-        } catch (IOException e) {
-            e.printStackTrace();
-            //TODO handle shit
-        }
+        printWriter.println(Logger.getTimeStamp() + message);
     }
-
 
     public String getName() {
         return name;
     }
-
 
     public String getIpAndPort() {
         return ipAndPort;

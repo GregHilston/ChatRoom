@@ -1,6 +1,4 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -14,12 +12,10 @@ public class ClientApp {
     private Socket serverSocket;
     private Boolean connected = false;
 
-
     public ClientApp(String hostName, int portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
     }
-
 
     /**
      * Client attempting to connect to the ChatRoom's ServerApp
@@ -44,7 +40,6 @@ public class ClientApp {
         }
     }
 
-
     /**
      * Client gracefully disconnecting
      */
@@ -56,60 +51,50 @@ public class ClientApp {
         }
     }
 
-
     protected Socket getServerSocket() {
         return serverSocket;
     }
-
 
     /**
      * Handles the reply from the server and any loss of connection to the server.
      */
     private class HandleServerReply implements Runnable {
         public void run() {
-            try (DataInputStream in = new DataInputStream(serverSocket.getInputStream())) {
+            try(BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
                 String fromServer;
-
-                while ((fromServer = in.readUTF()) != null) {
+                while ((fromServer = in.readLine()) != null) {
                     System.out.println(fromServer);
                     // TODO: Implement and handle server replies
                 }
-
                 connected = false;
-            } catch (IOException e) {
+            } catch(IOException e) {
                 System.err.println("ERROR: Lost connection to server");
-                e.printStackTrace();
                 System.exit(-1);
             }
         }
     }
 
-
-    /**
+    /***
      * Handles the client's input and sending it to the Server
      */
     private class HandleClientInput implements Runnable {
         public void run() {
-            try (DataInputStream stdIn = new DataInputStream(System.in);
-                 DataOutputStream clientOut = new DataOutputStream(serverSocket.getOutputStream())) {
-
+            try(BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
+                PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true);
                 String clientInput;
-                while (connected) {
-                    clientInput = stdIn.readUTF();
+                while(connected) {
+                    clientInput = stdIn.readLine();
                     if (clientInput != null) {
-                        clientOut.writeUTF(clientInput);
+                        clientOut.println(clientInput);
                     }
                 }
-
                 clientOut.close();
-            } catch (IOException e) {
+            } catch(IOException e) {
                 System.err.println("ERROR: Lost connection to server");
-                e.printStackTrace();
                 System.exit(-1);
             }
         }
     }
-
 
     public static void main(String[] args) {
         String hostName = "";

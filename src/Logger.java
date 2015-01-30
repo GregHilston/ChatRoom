@@ -11,7 +11,6 @@ public class Logger {
     private static File file = new File(getFileName());
     private static File fullPathToNewFile = new File(dir.toString() + "/" + file.toString());
 
-
     /**
      * Creates the "Logs" directory if does not already exist and creates the log file for this server's lifetime.
      * If the server already ran on this day, the new logfile will just append to the first one.
@@ -29,7 +28,6 @@ public class Logger {
             }
         }
     }
-
 
     /**
      * Writes the message to the log file, prefaced with the current time
@@ -54,7 +52,6 @@ public class Logger {
         }
     }
 
-
     /**
      * Gets the time stamp for logging and printing
      *
@@ -63,7 +60,6 @@ public class Logger {
     public static String getTimeStamp() {
         return new SimpleDateFormat("h:mm:ss a ").format(new Date());
     }
-
 
     /**
      * Returns the filename to be used for this Server's log file
