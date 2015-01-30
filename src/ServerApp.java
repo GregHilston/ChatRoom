@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.util.Enumeration;
@@ -109,11 +110,12 @@ public class ServerApp {
                         channelManager.messageAllUsers(name + ": " + fromClient);
                     }
                 }
-            } catch (Throwable t) {
+            } catch (IOException e) {
                 Logger.writeMessage("ERROR: Lost connection to \"" + name + "\"");
                 names.remove(name.toLowerCase());
-                t.printStackTrace();
+                e.printStackTrace();
             }
+            
         }
     }
 
