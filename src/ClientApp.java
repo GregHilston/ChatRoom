@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 /**
  * Application that end user interacts with.
  */
-
 public class ClientApp {
     private String hostName;
     private int portNumber;
@@ -47,7 +46,7 @@ public class ClientApp {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            Logger.writeMessage("serverSocket could not be closed");
+            Logger.logString("serverSocket could not be closed");
         }
     }
 
@@ -96,6 +95,11 @@ public class ClientApp {
         }
     }
 
+    /**
+     * Runs an instance of ClientApp
+     *
+     * @param args  <server ip address> <server port number>
+     */
     public static void main(String[] args) {
         String hostName = "";
         int portNumber = -1;
@@ -105,14 +109,14 @@ public class ClientApp {
             portNumber = Integer.parseInt(args[1]);
         }
         else{
-            DataInputStream stdIn = new DataInputStream(System.in);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
             try {
                 System.out.print("Please enter the server's ip address: ");
-                hostName = stdIn.readUTF();
+                hostName = reader.readLine();
 
                 System.out.print("Please enter the server's port number: ");
-                portNumber = Integer.parseInt(stdIn.readLine());
+                portNumber = Integer.parseInt(reader.readLine());
             } catch(IOException e) {
                 e.printStackTrace();
             }

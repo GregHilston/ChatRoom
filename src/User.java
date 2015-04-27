@@ -1,42 +1,60 @@
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /**
  * Object representation of the client on our ChatRoom
  */
-
 public class User {
     private String name;
-    private String ipAndPort;
+    private Socket socket;
     private PrintWriter printWriter;
+    private ChannelManager.Channel channel; // The channel this user belongs to
 
-    public User(String name, Socket userSocket) {
+    public User(String name, Socket socket, ChannelManager.Channel channel) {
         this.name = name;
-        this.ipAndPort = userSocket.getInetAddress() + ":" + userSocket.getPort();
+        this.socket = socket;
+        this.channel = channel;
 
         try {
-            printWriter = new PrintWriter(userSocket.getOutputStream(), true);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Writes a message to this user's screen
+     * Writes a string to this user's screen. Usually from the Server
      *
-     * @param message message to write
+     * @param message   message to write
      */
     public void writeMessage(String message) {
-        printWriter.println(Logger.getTimeStamp() + message);
+        printWriter.println(Logger.getCurrentTimeStamp() + message);
+    }
+
+    /**
+     * Writes a message to this user's screen
+     *
+     * @param message   message to write
+     */
+    public void writeMessage(ChatMessage message) {
+        printWriter.println(Logger.getCurrentTimeStamp() + message);
     }
 
     public String getName() {
         return name;
     }
 
-    public String getIpAndPort() {
-        return ipAndPort;
+    public InetAddress getIp() {
+        return this.socket.getInetAddress();
+    }
+
+    public int getPort() {
+        return this.socket.getPort();
+    }
+
+    public ChannelManager.Channel getChannel() {
+        return channel;
     }
 }

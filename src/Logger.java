@@ -3,12 +3,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Create a log file called [mm-dd-yyyy].log in the folder logs
+ * Class responsible for logging events and ChatMessages
  */
-
 public class Logger {
     private static File dir = new File("logs");
-    private static File file = new File(getFileName());
+    private static File file = new File(new SimpleDateFormat("MM_dd_yyyy").format(new Date()) + ".log");
     private static File fullPathToNewFile = new File(dir.toString() + "/" + file.toString());
 
     /**
@@ -16,57 +15,80 @@ public class Logger {
      * If the server already ran on this day, the new logfile will just append to the first one.
      */
     public static void createLogFile() {
-        // If directory doesn't exist, then create it
-        if (dir.exists() || dir.mkdir()) {
-            // If file doesn't exist, then create it
-            if (!fullPathToNewFile.exists()) {
+        if (dir.exists() || dir.mkdir()) { // If directory doesn't exist, then create it
+            if (!fullPathToNewFile.exists()) { // If file doesn't exist, then create it
                 try {
                     fullPathToNewFile.createNewFile();
                 } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 }
             }
         }
     }
 
     /**
-     * Writes the message to the log file, prefaced with the current time
+     * Writes the server string to the log file, prefaced with the current time
      *
-     * @param message the message to be printed to the log file
+     * @param message   the string to be printed to the log file
      */
-    public static void writeMessage(String message) {
+    public static void logString(String message) {
         // append to the end of the file (time): [message]
         try {
             FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-            bufferWritter.write(getTimeStamp() + message);
+
+            bufferWritter.write(getCurrentTimeStamp() + message);
             bufferWritter.newLine();
-            System.out.println(getTimeStamp() + message); // TODO: remove this for final build
             bufferWritter.close();
+            System.out.println(getCurrentTimeStamp() + message);
         } catch (FileNotFoundException e) { // Missing logs folder
-            createLogFile();
-            writeMessage("Warning: log folder was missing, creating folder now");
-            writeMessage(message);
+            Logger.createLogFile();
+            System.err.println("Warning: log folder was missing, creating folder now");
+            Logger.logString(message); // Recall the function, as the folder has been created
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Gets the time stamp for logging and printing
+     * Writes the user message to the log file, prefaced with the current time
      *
-     * @return time stamp
+     * @param message   the message to be printed to the log file
      */
-    public static String getTimeStamp() {
+    public static void logMessage(ChatMessage message) {
+        // append to the end of the file (time): [message]
+        try {
+            FileWriter fileWritter = new FileWriter(fullPathToNewFile, true);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+
+            bufferWritter.write(getCurrentTimeStamp() + message);
+            bufferWritter.newLine();
+            bufferWritter.close();
+            System.out.println(getCurrentTimeStamp() + message);
+        } catch (FileNotFoundException e) { // Missing logs folder
+            Logger.createLogFile();
+            System.err.println("Warning: log folder was missing, creating folder now");
+            Logger.logMessage(message); // Recall the function, as the folder has been created
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets the current time as a timestamp for logging and printing
+     *
+     * @return timestamp    the current time
+     */
+    public static String getCurrentTimeStamp() {
         return new SimpleDateFormat("h:mm:ss a ").format(new Date());
     }
 
     /**
      * Returns the filename to be used for this Server's log file
      *
-     * @return filename
+     * @return filename the name of the file being written to
      */
     public static String getFileName() {
-        return new SimpleDateFormat("MM_dd_yyyy").format(new Date()) + ".log";
+        return file.getName();
     }
 }
