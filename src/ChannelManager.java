@@ -14,7 +14,7 @@ public class ChannelManager {
     /**
      * Hands off the creation of the User to the default channel
      *
-     * @param user  user to add
+     * @param user user to add
      */
     public void addUser(User user) {
         channels.get(DEFAULTCHANNEL).addUser(user);
@@ -38,13 +38,13 @@ public class ChannelManager {
         /**
          * Messages every user besides the author
          *
-         * @param message  message being sent
+         * @param message message being sent
          */
         public void messageAllOtherUsers(ChatMessage message) {
             Logger.logMessage(message);
 
-            for(User u : users) {
-                if(!u.getName().equalsIgnoreCase(message.getUser().getName())) { // Doesn't write the message to the author
+            for (User u : users) {
+                if (!u.getName().equalsIgnoreCase(message.getUser().getName())) { // Doesn't write the message to the author
                     u.writeMessage(message);
                 }
             }
@@ -53,7 +53,7 @@ public class ChannelManager {
         /**
          * Add a user to this channel
          *
-         * @param user  the user to add to the channel
+         * @param user the user to add to the channel
          */
         public void addUser(User user) {
             users.add(user);
@@ -71,7 +71,7 @@ public class ChannelManager {
     /**
      * Messages every user in the channel. Usually from the Server
      *
-     * @param message   string to send to the users in this channel
+     * @param message string to send to the users in this channel
      */
     public void messageAllUsers(String message) {
         Logger.logString(message);
@@ -86,7 +86,7 @@ public class ChannelManager {
     /**
      * Messages every user in the channel
      *
-     * @param message   message to send to the users in this channel
+     * @param message message to send to the users in this channel
      */
     public void messageAllUsers(ChatMessage message) {
         Logger.logMessage(message);

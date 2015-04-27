@@ -1,4 +1,7 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -59,36 +62,36 @@ public class ClientApp {
      */
     private class HandleServerReply implements Runnable {
         public void run() {
-            try(BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
                 String fromServer;
                 while ((fromServer = in.readLine()) != null) {
                     System.out.println(fromServer);
                     // TODO: Implement and handle server replies
                 }
                 connected = false;
-            } catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println("ERROR: Lost connection to server");
                 System.exit(-1);
             }
         }
     }
 
-    /***
+    /**
      * Handles the client's input and sending it to the Server
      */
     private class HandleClientInput implements Runnable {
         public void run() {
-            try(BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
+            try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
                 PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true);
                 String clientInput;
-                while(connected) {
+                while (connected) {
                     clientInput = stdIn.readLine();
                     if (clientInput != null) {
                         clientOut.println(clientInput);
                     }
                 }
                 clientOut.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println("ERROR: Lost connection to server");
                 System.exit(-1);
             }
@@ -98,17 +101,16 @@ public class ClientApp {
     /**
      * Runs an instance of ClientApp
      *
-     * @param args  <server ip address> <server port number>
+     * @param args <server ip address> <server port number>
      */
     public static void main(String[] args) {
         String hostName = "";
         int portNumber = -1;
 
-        if(args.length == 2) {
+        if (args.length == 2) {
             hostName = args[0];
             portNumber = Integer.parseInt(args[1]);
-        }
-        else{
+        } else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
             try {
@@ -117,7 +119,7 @@ public class ClientApp {
 
                 System.out.print("Please enter the server's port number: ");
                 portNumber = Integer.parseInt(reader.readLine());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

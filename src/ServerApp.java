@@ -1,4 +1,7 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -19,12 +22,12 @@ public class ServerApp {
     /**
      * Checks if an entered username is unique on this server
      *
-     * @param   name name to check
-     * @return  if unique username
+     * @param name name to check
+     * @return if unique username
      */
     private static boolean uniqueUsername(String name) {
-        for(User u : users) {
-            if(u.getName().toLowerCase().equals(name.toLowerCase())) {
+        for (User u : users) {
+            if (u.getName().toLowerCase().equals(name.toLowerCase())) {
                 return false;
             }
         }
@@ -35,8 +38,8 @@ public class ServerApp {
     /**
      * Checks if an entered username is composed of only alphanumeric characters
      *
-     * @param   name name to check
-     * @return  if name contains only alphanumeric characters
+     * @param name name to check
+     * @return if name contains only alphanumeric characters
      */
     private static boolean alphaNumericOnly(String name) {
         return name.matches("^.*[^a-zA-Z0-9].*$"); // Regex
@@ -108,7 +111,7 @@ public class ServerApp {
         public void run() {
             String fromClient;
 
-            try(BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
                 PrintWriter serverOut = new PrintWriter(clientSocket.getOutputStream(), true);
 
                 serverOut.println("Enter a name: ");
@@ -135,7 +138,7 @@ public class ServerApp {
                 }
             } catch (IOException e) {
                 Logger.logString("ERROR: Lost connection to \"" + user.getName() + "\"");
-                if(user != null) {
+                if (user != null) {
                     users.remove(user);
                 }
                 e.printStackTrace();
@@ -146,7 +149,7 @@ public class ServerApp {
     /**
      * Runs an instance of ServerApp
      *
-     * @param args  <port number>
+     * @param args <port number>
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {

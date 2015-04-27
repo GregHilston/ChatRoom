@@ -29,7 +29,7 @@ public class Logger {
     /**
      * Writes the server string to the log file, prefaced with the current time
      *
-     * @param message   the string to be printed to the log file
+     * @param message the string to be printed to the log file
      */
     public static void logString(String message) {
         // append to the end of the file (time): [message]
@@ -53,7 +53,7 @@ public class Logger {
     /**
      * Writes the user message to the log file, prefaced with the current time
      *
-     * @param message   the message to be printed to the log file
+     * @param message the message to be printed to the log file
      */
     public static void logMessage(ChatMessage message) {
         // append to the end of the file (time): [message]

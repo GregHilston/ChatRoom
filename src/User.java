@@ -27,7 +27,7 @@ public class User {
     /**
      * Writes a string to this user's screen. Usually from the Server
      *
-     * @param message   message to write
+     * @param message message to write
      */
     public void writeMessage(String message) {
         printWriter.println(Logger.getCurrentTimeStamp() + message);
@@ -36,7 +36,7 @@ public class User {
     /**
      * Writes a message to this user's screen
      *
-     * @param message   message to write
+     * @param message message to write
      */
     public void writeMessage(ChatMessage message) {
         printWriter.println(Logger.getCurrentTimeStamp() + message);

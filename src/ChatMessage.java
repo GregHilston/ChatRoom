@@ -14,9 +14,9 @@ public class ChatMessage {
     }
 
     /**
-     * @param user  the user that sent this message
-     * @param type  the type of message
-     * @param message   the message text itself
+     * @param user    the user that sent this message
+     * @param type    the type of message
+     * @param message the message text itself
      */
     public ChatMessage(User user, Type type, String message) {
         this.user = user;
