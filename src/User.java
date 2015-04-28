@@ -11,6 +11,14 @@ public class User {
     private Socket socket;
     private PrintWriter printWriter;
     private ChannelManager.Channel channel; // The channel this user belongs to
+    private State state = State.LOGIN;
+
+    /**
+     * Distinguishes the state this client is in
+     */
+    public enum State {
+        LOGIN, CHATTING, LOGOUT
+    }
 
     public User(String name, Socket socket, ChannelManager.Channel channel) {
         this.name = name;
@@ -46,6 +54,10 @@ public class User {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public InetAddress getIp() {
         return this.socket.getInetAddress();
     }
@@ -56,5 +68,13 @@ public class User {
 
     public ChannelManager.Channel getChannel() {
         return channel;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 }

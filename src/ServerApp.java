@@ -101,39 +101,29 @@ public class ServerApp {
      */
     private class HandleClientReply implements Runnable {
         private Socket clientSocket;
-        private boolean uniqueName = false;
-        private User user = null;
+        private PrintWriter serverOut;
+        private User user;
 
         public HandleClientReply(Socket clientSocket) {
             this.clientSocket = clientSocket;
+            this.user = new User("Unnamed", clientSocket, channelManager.getDefaultChannel());
         }
 
         public void run() {
             String fromClient;
 
             try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-                PrintWriter serverOut = new PrintWriter(clientSocket.getOutputStream(), true);
+                serverOut = new PrintWriter(clientSocket.getOutputStream(), true);
 
                 serverOut.println("Enter a name: ");
-
                 while ((fromClient = in.readLine()) != null) {
-                    if (!uniqueName) {
-                        // fromClient is a proposed username
-
-                        if (alphaNumericOnly(fromClient)) {
-                            serverOut.println("That username contains illegal non-alphanumeric character(s), please try another username.");
-                        } else if (!uniqueUsername(fromClient)) {
-                            serverOut.println("That username is already in use, please try another username.");
-                        } else { // Valid username
-                            uniqueName = true;
-                            user = new User(fromClient, clientSocket, channelManager.getDefaultChannel());
-                            users.add(user);
-                            channelManager.addUser(user);
-                            user.writeMessage("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
-                            Logger.logString(user.getIp() + ":" + user.getPort() + " now known as " + user.getName());
+                    if (user.getState() == User.State.LOGIN) {
+                        if(login(fromClient)) { // fromClient is a proposed username
+                            user.setName(fromClient);
+                            user.setState(User.State.CHATTING);
                         }
                     } else {
-                        user.getChannel().messageAllOtherUsers(new ChatMessage(user, ChatMessage.Type.MESSAGE, fromClient));
+                        user.getChannel().messageAllOtherUsers(new ChatMessage(user, fromClient));
                     }
                 }
             } catch (IOException e) {
@@ -142,6 +132,29 @@ public class ServerApp {
                     users.remove(user);
                 }
                 e.printStackTrace();
+            }
+        }
+
+        /**
+         * Attempts to register the user with a username
+         *
+         * @param proposedUserName username the user proposed
+         * @return whether the proposed username was accepted
+         */
+        private Boolean login(String proposedUserName) {
+            if (alphaNumericOnly(proposedUserName)) {
+                serverOut.println("That username contains illegal non-alphanumeric character(s), please try another username.");
+                return false;
+            } else if (!uniqueUsername(proposedUserName)) {
+                serverOut.println("That username is already in use, please try another username.");
+                return false;
+            } else { // Valid username
+                user = new User(proposedUserName, clientSocket, channelManager.getDefaultChannel());
+                users.add(user);
+                channelManager.addUser(user);
+                user.writeMessage("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                Logger.logString(user.getIp() + ":" + user.getPort() + " now known as " + user.getName());
+                return true;
             }
         }
     }
@@ -153,7 +166,7 @@ public class ServerApp {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
+        if (args.length > 1) {
             System.err.println("Usage: java ServerApp <port number>");
             System.exit(1);
         }
