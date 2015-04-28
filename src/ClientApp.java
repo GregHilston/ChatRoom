@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+// TODO: Have a way to send a message from an instance of this object
+
 /**
  * Application that end user interacts with.
  */
