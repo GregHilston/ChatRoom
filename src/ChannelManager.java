@@ -29,6 +29,7 @@ public class ChannelManager {
      */
     public class Channel {
         private String name;
+        private String description; // TODO: implement (print when user joins a channel)
         private ArrayList<User> users = new ArrayList<>(); // Users currently in this channel
 
         public Channel(String name) {
@@ -66,19 +67,33 @@ public class ChannelManager {
         public int getNumberOfUsers() {
             return users.size();
         }
+
+        public String getUserNames() {
+            String userList = "Users currently in channel:";
+
+            for(User u : users) {
+                userList += "\n\t" + u.getName() + "";
+            }
+
+            return userList;
+        }
+
+        public void removeUser(User u) {
+            users.remove(u);
+        }
     }
 
     /**
      * Messages every user in the channel. Usually from the Server
      *
-     * @param message string to send to the users in this channel
+     * @param string string to send to the users in this channel
      */
-    public void messageAllUsers(String message) {
-        Logger.logString(message);
+    public void messageAllUsers(String string) {
+        Logger.logString(string);
 
         for (Channel c : channels) {
             for (User user : c.users) {
-                user.writeMessage(message);
+                user.writeString(string);
             }
         }
     }

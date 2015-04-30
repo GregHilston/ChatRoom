@@ -35,10 +35,10 @@ public class User {
     /**
      * Writes a string to this user's screen. Usually from the Server
      *
-     * @param message message to write
+     * @param message string to write
      */
-    public void writeMessage(String message) {
-        printWriter.println(Logger.getCurrentTimeStamp() + message);
+    public void writeString(String message) {
+        printWriter.println(message);
     }
 
     /**
@@ -48,6 +48,18 @@ public class User {
      */
     public void writeMessage(ChatMessage message) {
         printWriter.println(Logger.getCurrentTimeStamp() + message);
+    }
+
+    /**
+     * Disconnects the user from the server
+     */
+    public void disconnect() {
+        try {
+            writeString("You have disconnected from the server");
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getName() {

@@ -13,7 +13,7 @@ public class ServerApp {
     private static HashSet<User> users = new HashSet<>(); // Users currently on the server
     private ServerSocket serverSocket;
     private int portNumber;
-    private ChannelManager channelManager = new ChannelManager("Lobby");
+    private ChannelManager channelManager = new ChannelManager("#lobby");
 
     public ServerApp(int portNumber) {
         this.portNumber = portNumber;
@@ -122,8 +122,12 @@ public class ServerApp {
                             user.setName(fromClient);
                             user.setState(User.State.CHATTING);
                         }
-                    } else {
-                        user.getChannel().messageAllOtherUsers(new ChatMessage(user, fromClient));
+                    } else if(user.getState() == User.State.CHATTING) {
+                        if(fromClient.startsWith("/")) { // Server command
+                            handleCommand(user, fromClient);
+                        } else {
+                            user.getChannel().messageAllOtherUsers(new ChatMessage(user, fromClient));
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -152,9 +156,46 @@ public class ServerApp {
                 user = new User(proposedUserName, clientSocket, channelManager.getDefaultChannel());
                 users.add(user);
                 channelManager.addUser(user);
-                user.writeMessage("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                user.writeString("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                user.writeString(user.getChannel().getUserNames());
+                channelManager.getDefaultChannel().messageAllOtherUsers(new ChatMessage(user, "has joined the channel"));
                 Logger.logString(user.getIp() + ":" + user.getPort() + " now known as " + user.getName());
                 return true;
+            }
+        }
+
+        /**
+         * Lists all commands supported by this Server
+         */
+        private void printCommands() {
+            user.writeString("\t\\help \t lists all commands");
+            user.writeString("\t\\list \t lists the users in your channel");
+            user.writeString("\t\\quit \t disconnect from the server");
+        }
+
+        /**
+         * Handles a command from the user
+         *
+         * @param command command user entered. Starts with "/"
+         */
+        private void handleCommand(User user, String command) {
+            switch (command) {
+                case "/list":
+                    user.writeString(user.getChannel().getUserNames());
+                    break;
+                case "/quit":
+                case "/disconnect":
+                    user.setState(User.State.LOGOUT);
+                    users.remove(user); // Removes the user from the server's list
+                    user.getChannel().removeUser(user); //Removes the user from the channel he / she was in
+                    user.disconnect();
+                    Logger.logString(user.getName() + " disconnected");
+                    channelManager.getDefaultChannel().messageAllOtherUsers(new ChatMessage(user, "has left the server"));
+                default:
+                    user.writeString("Unknown command: \"" + command + "\"");
+                case "/help":
+                    printCommands();
+                    break;
             }
         }
     }
