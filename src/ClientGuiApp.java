@@ -1,56 +1,54 @@
-import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
 
 /**
  * Client GUI. Has a spot for messages to appear, list of users in the channel, area of the user to type a message and
  * button to submit messages
  */
 public class ClientGuiApp {
-    private JFrame frame;
-    private ChatBoxUserList chatBoxUserList;
-    private JPanel basePanel;
-    private JPanel messageAndSubmitPanel;
-    private GridBagConstraints gridBagConstraints;
-    private JTextField messageTextField;
-    private JButton submitButton;
+    public static void addComponentsToPane(Container pane) {
+        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-    public ClientGuiApp() {
-        frame = new JFrame();
-        frame.setSize(600, 600); // TODO: Change to be relative
+        ChatBoxUserListGui chatBoxUserListGui = new ChatBoxUserListGui();
+        JTextField messageTextField = new JTextField();
+        messageTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                messageTextField.setText("");
+            }
+        });
+
+        pane.add(chatBoxUserListGui);
+        pane.add(messageTextField);
+    }
+
+    /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private static void createAndShowGUI() {
+        //Create and set up the window.
+        JFrame frame = new JFrame("Client GUI App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        basePanel = new JPanel();
-        basePanel.setLayout(new BoxLayout(basePanel, BoxLayout.Y_AXIS));
+        //Set up the content pane.
+        addComponentsToPane(frame.getContentPane());
 
-        chatBoxUserList = new ChatBoxUserList();
-
-        messageAndSubmitPanel = new JPanel();
-        messageAndSubmitPanel.setLayout(new GridBagLayout());
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 400;
-        gridBagConstraints.ipady = 50;
-        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-
-        messageTextField = new JTextField();
-        messageAndSubmitPanel.add(messageTextField, gridBagConstraints);
-
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 200;
-        gridBagConstraints.ipady = 50;
-        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-
-        submitButton = new JButton("Submit");
-        messageAndSubmitPanel.add(submitButton, gridBagConstraints);
-
-        basePanel.add(chatBoxUserList);
-        basePanel.add(messageAndSubmitPanel);
-        frame.add(basePanel);
-
+        //Display the window.
+        frame.pack();
         frame.setVisible(true);
     }
 
     public static void main(String args[]) {
-        ClientGuiApp clientGuiApp = new ClientGuiApp();
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
     }
 }
