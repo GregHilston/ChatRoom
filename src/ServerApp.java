@@ -131,11 +131,11 @@ public class ServerApp {
                     }
                 }
             } catch (IOException e) {
-                Logger.logString("ERROR: Lost connection to \"" + user.getName() + "\"");
+                Logger.logString("Lost connection to \"" + user.getName() + "\"");
                 if (user != null) {
                     users.remove(user);
                 }
-                e.printStackTrace();
+                // e.printStackTrace(); // TODO: Decide if I want this actually printed / logged
             }
         }
 

@@ -16,24 +16,35 @@ public class ClientApp {
     private Socket serverSocket;
     private Boolean connected = false;
     private Boolean usingGui;
+    private ClientGui clientGui;
 
     public ClientApp(String hostName, int portNumber, Boolean gui) {
         this.hostName = hostName;
         this.portNumber = portNumber;
         this.usingGui = gui;
+
+        if(this.usingGui) {
+            clientGui = new ClientGui(this);
+
+            //Schedule a job for the event-dispatching thread:
+            //creating and showing this application's GUI.
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    clientGui.createAndShowGUI();
+                }
+            });
+        }
     }
 
     /**
      * Client attempting to connect to the ChatRoom's ServerApp
      */
-    protected void connect() {
+    protected Boolean connect() {
         try {
             serverSocket = new Socket(hostName, portNumber);
 
-            if(!usingGui) { // If we are using Gui, let it handle displaying the server's messages
-                Thread serverThread = new Thread(new HandleServerReply());
-                serverThread.start();
-            }
+            Thread serverThread = new Thread(new HandleServerReply());
+            serverThread.start();
 
             Thread clientThread = new Thread(new HandleClientInput());
             clientThread.start();
@@ -46,6 +57,7 @@ public class ClientApp {
             System.err.println("Couldn't get I/O for the connection to " + hostName);
             System.exit(1);
         }
+        return connected;
     }
 
     /**
@@ -81,12 +93,20 @@ public class ClientApp {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
                 String fromServer;
                 while ((fromServer = in.readLine()) != null) {
-                    System.out.println(fromServer);
+                    System.err.println("Handling Server Reply");
+
+                    if(usingGui) {
+                        clientGui.updateChatBox(fromServer);
+                    }
+                    else {
+                        System.out.println(fromServer);
+                    }
                     // TODO: Implement and handle server replies
                 }
                 connected = false;
             } catch (IOException e) {
                 System.err.println("ERROR: Lost connection to server");
+                disconnect();
                 System.exit(-1);
             }
         }
@@ -99,6 +119,7 @@ public class ClientApp {
         public void run() {
             try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
                 String clientInput;
+
                 while (connected) {
                     clientInput = stdIn.readLine();
                     if (clientInput != null) {
@@ -120,10 +141,12 @@ public class ClientApp {
     public static void main(String[] args) {
         String hostName = "";
         int portNumber = -1;
+        Boolean usingGui = false;
 
-        if (args.length == 2) {
+        if (args.length == 3) {
             hostName = args[0];
             portNumber = Integer.parseInt(args[1]);
+            usingGui = Boolean.parseBoolean(args[2]);
         } else {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -133,12 +156,15 @@ public class ClientApp {
 
                 System.out.print("Please enter the server's port number: ");
                 portNumber = Integer.parseInt(reader.readLine());
+
+                System.out.print("Please enter the server's port number: ");
+                portNumber = Integer.parseInt(reader.readLine());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        ClientApp clientApp = new ClientApp(hostName, portNumber, false);
+        ClientApp clientApp = new ClientApp(hostName, portNumber, usingGui);
         clientApp.connect();
     }
 }
