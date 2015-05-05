@@ -15,10 +15,12 @@ public class ClientApp {
     private int portNumber;
     private Socket serverSocket;
     private Boolean connected = false;
+    private Boolean usingGui;
 
-    public ClientApp(String hostName, int portNumber) {
+    public ClientApp(String hostName, int portNumber, Boolean gui) {
         this.hostName = hostName;
         this.portNumber = portNumber;
+        this.usingGui = gui;
     }
 
     /**
@@ -28,8 +30,10 @@ public class ClientApp {
         try {
             serverSocket = new Socket(hostName, portNumber);
 
-            Thread serverThread = new Thread(new HandleServerReply());
-            serverThread.start();
+            if(!usingGui) { // If we are using Gui, let it handle displaying the server's messages
+                Thread serverThread = new Thread(new HandleServerReply());
+                serverThread.start();
+            }
 
             Thread clientThread = new Thread(new HandleClientInput());
             clientThread.start();
@@ -50,6 +54,7 @@ public class ClientApp {
     protected void disconnect() {
         try {
             serverSocket.close();
+            connected = false;
         } catch (IOException e) {
             Logger.logString("serverSocket could not be closed");
         }
@@ -57,6 +62,15 @@ public class ClientApp {
 
     protected Socket getServerSocket() {
         return serverSocket;
+    }
+
+    protected void sendString(String s) {
+        try {
+            PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true); // Will close when shell or GUI is closed
+            clientOut.println(s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -84,15 +98,13 @@ public class ClientApp {
     private class HandleClientInput implements Runnable {
         public void run() {
             try (BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in))) {
-                PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true);
                 String clientInput;
                 while (connected) {
                     clientInput = stdIn.readLine();
                     if (clientInput != null) {
-                        clientOut.println(clientInput);
+                        sendString(clientInput);
                     }
                 }
-                clientOut.close();
             } catch (IOException e) {
                 System.err.println("ERROR: Lost connection to server");
                 System.exit(-1);
@@ -126,7 +138,7 @@ public class ClientApp {
             }
         }
 
-        ClientApp clientApp = new ClientApp(hostName, portNumber);
+        ClientApp clientApp = new ClientApp(hostName, portNumber, false);
         clientApp.connect();
     }
 }

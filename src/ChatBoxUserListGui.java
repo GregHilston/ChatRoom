@@ -28,4 +28,8 @@ public class ChatBoxUserListGui extends JPanel {
         this.add(chatBoxScrollPane, BorderLayout.CENTER);
         this.add(userListScrollPane, BorderLayout.EAST);
     }
+
+    public JTextArea getChatBox() {
+        return chatBox;
+    }
 }
