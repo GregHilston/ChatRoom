@@ -16,12 +16,10 @@ public class ChatBoxUserListGui extends JPanel {
         this.setLayout(new BorderLayout()); // TODO: Decide if this is better than new BoxLayout(this, BoxLayout.X_AXIS)
 
         chatBox = new JTextArea();
-        chatBox.setText("chatBox");
         chatBox.setEditable(false);
         chatBoxScrollPane = new JScrollPane(chatBox);
 
         userList = new JTextArea();
-        userList.setText("userList");
         userList.setEditable(false);
         userListScrollPane = new JScrollPane(userList);
 

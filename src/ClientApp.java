@@ -31,6 +31,11 @@ public class ClientApp {
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     clientGui.createAndShowGUI();
+                    Thread serverThread = new Thread(new HandleServerReply());
+                    serverThread.start();
+
+                    Thread clientThread = new Thread(new HandleClientInput());
+                    clientThread.start();
                 }
             });
         }
@@ -42,12 +47,6 @@ public class ClientApp {
     protected Boolean connect() {
         try {
             serverSocket = new Socket(hostName, portNumber);
-
-            Thread serverThread = new Thread(new HandleServerReply());
-            serverThread.start();
-
-            Thread clientThread = new Thread(new HandleClientInput());
-            clientThread.start();
 
             connected = true;
         } catch (UnknownHostException e) {
