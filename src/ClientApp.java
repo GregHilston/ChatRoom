@@ -200,7 +200,7 @@ public class ClientApp {
                 portNumber = Integer.parseInt(reader.readLine());
 
                 System.out.print("Use GUI? [true/false]: ");
-                portNumber = Integer.parseInt(reader.readLine());
+                usingGui = Boolean.parseBoolean(reader.readLine());
             } catch (IOException e) {
                 e.printStackTrace();
             }
