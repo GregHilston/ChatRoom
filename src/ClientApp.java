@@ -192,7 +192,7 @@ public class ClientApp {
                 System.out.print("Please enter the server's port number: ");
                 portNumber = Integer.parseInt(reader.readLine());
 
-                System.out.print("Please enter the server's port number: ");
+                System.out.print("Use GUI? [true/false]: ");
                 portNumber = Integer.parseInt(reader.readLine());
             } catch (IOException e) {
                 e.printStackTrace();
