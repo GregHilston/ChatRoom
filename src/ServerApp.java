@@ -142,7 +142,7 @@ public class ServerApp {
             if(u.getState() == User.State.LOGIN) { // User didn't join a channel yet and therefore has no name
                 Logger.logString(user.getIp() + ":" + user.getPort() + " disconnected");
             }
-            else { // User was in a channel and has a name
+            else if(u.getState() == User.State.CHATTING){ // User was in a channel and has a name
                 Logger.logString(user.getName() + ": disconnected");
                 user.getChannel().stringToAllOtherUsers(user, user.getName() + ": disconnected");
                 user.disconnect();
@@ -164,6 +164,9 @@ public class ServerApp {
                 return false;
             } else if (!uniqueUsername(proposedUserName)) {
                 serverOut.println("That username is already in use, please try another username.");
+                return false;
+            } else if(proposedUserName.length() > 9) {
+                serverOut.println("That username is more than 9 characters. Please try a shorter name.");
                 return false;
             } else { // Valid username
                 user = new User(proposedUserName, clientSocket, channelManager.getDefaultChannel());
