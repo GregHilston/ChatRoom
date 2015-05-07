@@ -138,11 +138,18 @@ public class ClientApp {
                     }
                     // TODO: Implement and handle server replies
                 }
-                connected = false;
             } catch (IOException e) {
-                System.err.println("ERROR: Lost connection to server");
+                // Catching and handling in Finally incase the socket closes
+            } finally {
                 disconnect();
-                System.exit(-1);
+
+                if(usingGui) {
+                    clientGui.updateChatBox("Lost connection to server");
+                }
+                if(!usingGui) { // If they're using the GUI, let them close it
+                    System.err.println("ERROR: Lost connection to server");
+                    System.exit(-1);
+                }
             }
         }
     }

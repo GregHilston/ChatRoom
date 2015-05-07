@@ -189,29 +189,84 @@ public class ServerApp {
             user.writeString("Supported commands:");
             user.writeString("\t/help \t lists all commands");
             user.writeString("\t/list \t lists the users in your channel");
-            user.writeString("\t/quit \t disconnect from the server");
+            user.writeString("\t/quit | /disconnect \t disconnect from the server");
+            user.writeString("\t/whisper | /message [username] [message]\t privately messages the user");
         }
 
         /**
          * Handles a command from the user
          *
+         * @param user user who sent command
          * @param command command user entered. Starts with "/"
          */
         private void handleCommand(User user, String command) {
+            command = command.replace("/", ""); // Remove the /
+            String[] splited = new String[0];
+            String message = "";
+
+            if(command.contains(" ")) {
+                splited = command.split(" ");
+                command = splited[0];
+
+                for(int i = 2; i < splited.length; i++) { // Rebuild the
+                    message += splited[i] + " ";
+                }
+            }
+
             switch (command) {
-                case "/list":
+                case "list":
                     user.writeString(user.getChannel().getUserNames());
                     break;
-                case "/quit":
-                case "/disconnect":
+                case "quit":
+                case "disconnect":
                     userDisconnected(user);
+                    break;
+                case "whisper":
+                case "message":
+                    String parameter0 = splited[1];
+
+                    if(splited.length >= 3) { // Checking for correct amount of space delimited input
+                        if(!privateMessage(user, parameter0, message)) { // Message wasn't sent, user (parameter 0) does not exist
+                            user.writeString("Error: User " + parameter0 + " does not exist in channel " + user.getChannel().getName());
+                        }
+                    } else {
+                        user.writeString("Incorrect usage of command: " + command);
+                        user.writeString("\t/whisper | /message [username] [message]\t privately messages the user");
+                    }
+                    break;
                 default:
                     user.writeString("Unknown command: \"" + command + "\"");
-                case "/help":
+                case "help":
                     printCommands();
                     break;
             }
         }
+    }
+
+    /**
+     * Privately messages the user for the author
+     *
+     * @param author user who sent the private message
+     * @param userName user the author wishes to send the message to
+     * @param message the message to be sent
+     * @return if the message was sent
+     */
+    private Boolean privateMessage(User author, String userName, String message) {
+        User receiver = null;
+        message = "(PM) " + message;
+
+        for(User u : users) {
+            if(u.getName().equalsIgnoreCase(userName)) {
+                receiver = u;
+            }
+        }
+
+        if(receiver == null) { // Username with that name does not exist
+            return false; // Message was not sent
+        }
+
+        receiver.writeMessage(new ChatMessage(author, message));
+        return true;
     }
 
     /**
