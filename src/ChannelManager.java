@@ -37,6 +37,23 @@ public class ChannelManager {
         }
 
         /**
+         * Sends a string to  every user besides the author
+         * Generally used to send Server Messages to Clients
+         *      /server: connect [username]     user joined the channel
+         *      /server: disconnect [username]  user left the channel
+         * @param s String to be sent
+         */
+        public void stringToAllOtherUsers(User author, String s) {
+            Logger.logString(s);
+
+            for (User u : users) {
+                if (!u.getName().equalsIgnoreCase(author.getName())) { // Doesn't write the message to the author
+                    u.writeString(s);
+                }
+            }
+        }
+
+        /**
          * Messages every user besides the author
          *
          * @param message message being sent

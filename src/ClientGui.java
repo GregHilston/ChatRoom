@@ -1,7 +1,8 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Client GUI. Has a spot for messages to appear, list of users in the channel, area of the user to type a message and
@@ -15,8 +16,36 @@ public class ClientGui {
         this.clientApp = clientApp;
     }
 
+    /**
+     * Updates the list of users
+     *
+     * @param userList list of users
+     */
+    public void setUserList(ArrayList<User> userList) {
+        String userlistText = "";
+
+        for(User u : userList) {
+            userlistText += u.getName() + "\n";
+        }
+
+        chatBoxUserListGui.setUserListTextArea(userlistText);
+    }
+
+    public void addUserToList(String userName) {
+        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText() + "\n " + userName);
+    }
+
+    public void removeUserFromList(String userName) {
+        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText().replace(userName + " \n", ""));
+    }
+
+    /**
+     * Appends the string to the end of the chatbox
+     *
+     * @param fromServer string to append
+     */
     public void updateChatBox(String fromServer) {
-        chatBoxUserListGui.getChatBox().setText(chatBoxUserListGui.getChatBox().getText() + "\n" + fromServer);
+        chatBoxUserListGui.getChatBoxTextArea().setText(chatBoxUserListGui.getChatBoxTextArea().getText() + "\n" + fromServer);
     }
 
     public void addComponentsToPane(Container pane) {
@@ -44,15 +73,20 @@ public class ClientGui {
      * event-dispatching thread.
      */
     public void createAndShowGUI() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Double width = screenSize.getWidth();
+        Double height = screenSize.getHeight();
+
         //Create and set up the window.
         JFrame frame = new JFrame("Client GUI App");
+        frame.setSize(width.intValue() / 3, height.intValue() / 2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Set up the content pane.
         addComponentsToPane(frame.getContentPane());
 
         //Display the window.
-        frame.pack();
+        //frame.pack();
         frame.setVisible(true);
     }
 }

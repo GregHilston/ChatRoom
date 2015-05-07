@@ -156,9 +156,10 @@ public class ServerApp {
                 user = new User(proposedUserName, clientSocket, channelManager.getDefaultChannel());
                 users.add(user);
                 channelManager.addUser(user);
-                user.writeString("Welcome to \"" + channelManager.getDefaultChannel().getName() + "\"");
+                user.writeString("Welcome to \"" + user.getChannel().getName() + "\"");
                 user.writeString(user.getChannel().getUserNames());
-                channelManager.getDefaultChannel().messageAllOtherUsers(new ChatMessage(user, "has joined the channel"));
+                user.getChannel().messageAllOtherUsers(new ChatMessage(user, "has joined the channel"));
+                user.getChannel().stringToAllOtherUsers(user, "/server: connect " + user.getName());
                 Logger.logString(user.getIp() + ":" + user.getPort() + " now known as " + user.getName());
                 return true;
             }
@@ -168,9 +169,10 @@ public class ServerApp {
          * Lists all commands supported by this Server
          */
         private void printCommands() {
-            user.writeString("\t\\help \t lists all commands");
-            user.writeString("\t\\list \t lists the users in your channel");
-            user.writeString("\t\\quit \t disconnect from the server");
+            user.writeString("Supported commands:");
+            user.writeString("\t/help \t lists all commands");
+            user.writeString("\t/list \t lists the users in your channel");
+            user.writeString("\t/quit \t disconnect from the server");
         }
 
         /**

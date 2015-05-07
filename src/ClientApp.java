@@ -84,6 +84,29 @@ public class ClientApp {
         }
     }
 
+    private void handleCommand(String fromServer) {
+        fromServer = fromServer.replace("/server: ", ""); // Remove the /server command
+        String[] splited = fromServer.split(" ");
+        String command = splited[0];
+        String parameter = splited[1];
+
+        System.err.println("command: \"" + command + "\"");
+        System.err.println("parameter: \"" + parameter + "\"");
+
+        switch (command) {
+            case "connect":
+                if(usingGui) {
+                    clientGui.addUserToList(parameter);
+                }
+                break;
+            case "disconnect":
+                if(usingGui) {
+                    clientGui.removeUserFromList(parameter);
+                }
+                break;
+        }
+    }
+
     /**
      * Handles the reply from the server and any loss of connection to the server.
      */
@@ -92,13 +115,15 @@ public class ClientApp {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()))) {
                 String fromServer;
                 while ((fromServer = in.readLine()) != null) {
-                    System.err.println("Handling Server Reply");
-
-                    if(usingGui) {
-                        clientGui.updateChatBox(fromServer);
+                    if(fromServer.startsWith("/")) { // Server command
+                        handleCommand(fromServer);
                     }
-                    else {
-                        System.out.println(fromServer);
+                    else { // Chat message
+                        if (usingGui) {
+                            clientGui.updateChatBox(fromServer);
+                        } else {
+                            System.out.println(fromServer);
+                        }
                     }
                     // TODO: Implement and handle server replies
                 }
