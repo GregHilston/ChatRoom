@@ -51,9 +51,25 @@ public class User {
     }
 
     /**
+     * Alert all other users that this user connected
+     */
+    public void connectAlert() {
+        getChannel().stringToAllOtherUsers(this, "/server: connect " + getName());
+    }
+
+    /**
+     * Alert all other users that this user disconnected
+     */
+    public void disconnectAlert() {
+        getChannel().stringToAllOtherUsers(this, "/server: disconnect " + getName());
+    }
+
+    /**
      * Disconnects the user from the server
      */
     public void disconnect() {
+        disconnectAlert();
+
         try {
             writeString("You have disconnected from the server");
             socket.close();

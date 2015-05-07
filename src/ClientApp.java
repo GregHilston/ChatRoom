@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 // TODO: Have a way to send a message from an instance of this object
@@ -80,7 +81,12 @@ public class ClientApp {
             PrintWriter clientOut = new PrintWriter(serverSocket.getOutputStream(), true); // Will close when shell or GUI is closed
             clientOut.println(s);
         } catch (IOException e) {
-            e.printStackTrace();
+            if(usingGui) {
+                clientGui.updateChatBox("Lost connection to server");
+            } else {
+                System.err.println("Lost connection to server");
+            }
+            // e.printStackTrace();
         }
     }
 
@@ -89,9 +95,6 @@ public class ClientApp {
         String[] splited = fromServer.split(" ");
         String command = splited[0];
         String parameter = splited[1];
-
-        System.err.println("command: \"" + command + "\"");
-        System.err.println("parameter: \"" + parameter + "\"");
 
         switch (command) {
             case "connect":

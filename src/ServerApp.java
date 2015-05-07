@@ -103,10 +103,11 @@ public class ServerApp {
         private Socket clientSocket;
         private PrintWriter serverOut;
         private User user;
+        private String defaultUserName = "/Unanmed"; // "/" to stop others from having this name
 
         public HandleClientReply(Socket clientSocket) {
             this.clientSocket = clientSocket;
-            this.user = new User("Unnamed", clientSocket, channelManager.getDefaultChannel());
+            this.user = new User(defaultUserName, clientSocket, channelManager.getDefaultChannel());
         }
 
         public void run() {
@@ -131,12 +132,24 @@ public class ServerApp {
                     }
                 }
             } catch (IOException e) {
-                Logger.logString("Lost connection to \"" + user.getName() + "\"");
-                if (user != null) {
-                    users.remove(user);
-                }
-                // e.printStackTrace(); // TODO: Decide if I want this actually printed / logged
+                // Catching IOException thrown by Windows OS
+            } finally {
+                userDisconnected(user);
             }
+        }
+
+        private void userDisconnected(User u) {
+            if(u.getState() == User.State.LOGIN) { // User didn't join a channel yet and therefore has no name
+                Logger.logString(user.getIp() + ":" + user.getPort() + " disconnected");
+            }
+            else { // User was in a channel and has a name
+                Logger.logString(user.getName() + ": disconnected");
+                user.getChannel().stringToAllOtherUsers(user, user.getName() + ": disconnected");
+                user.disconnect();
+                users.remove(user); // Removes the users from the server's list of logged in users
+                user.getChannel().removeUser(user); //Removes the user from the channel he / she was in
+            }
+            user.setState(User.State.LOGOUT);
         }
 
         /**
@@ -159,7 +172,8 @@ public class ServerApp {
                 user.writeString("Welcome to \"" + user.getChannel().getName() + "\"");
                 user.writeString(user.getChannel().getUserNames());
                 user.getChannel().messageAllOtherUsers(new ChatMessage(user, "has joined the channel"));
-                user.getChannel().stringToAllOtherUsers(user, "/server: connect " + user.getName());
+                user.connectAlert();
+                user.getChannel().sendUsers(user);
                 Logger.logString(user.getIp() + ":" + user.getPort() + " now known as " + user.getName());
                 return true;
             }
@@ -187,12 +201,7 @@ public class ServerApp {
                     break;
                 case "/quit":
                 case "/disconnect":
-                    user.setState(User.State.LOGOUT);
-                    users.remove(user); // Removes the user from the server's list
-                    user.getChannel().removeUser(user); //Removes the user from the channel he / she was in
-                    user.disconnect();
-                    Logger.logString(user.getName() + " disconnected");
-                    channelManager.getDefaultChannel().messageAllOtherUsers(new ChatMessage(user, "has left the server"));
+                    userDisconnected(user);
                 default:
                     user.writeString("Unknown command: \"" + command + "\"");
                 case "/help":

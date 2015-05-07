@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 /**
@@ -32,11 +34,11 @@ public class ClientGui {
     }
 
     public void addUserToList(String userName) {
-        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText() + "\n " + userName);
+        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText() + userName + "\n");
     }
 
     public void removeUserFromList(String userName) {
-        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText().replace(userName + " \n", ""));
+        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText().replace(userName + "\n", ""));
     }
 
     /**
@@ -66,6 +68,7 @@ public class ClientGui {
         pane.add(chatBoxUserListGui);
         pane.add(messageTextField);
     }
+
 
     /**
      * Create the GUI and show it.  For thread safety,

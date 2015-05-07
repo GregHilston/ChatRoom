@@ -44,8 +44,6 @@ public class ChannelManager {
          * @param s String to be sent
          */
         public void stringToAllOtherUsers(User author, String s) {
-            Logger.logString(s);
-
             for (User u : users) {
                 if (!u.getName().equalsIgnoreCase(author.getName())) { // Doesn't write the message to the author
                     u.writeString(s);
@@ -83,6 +81,17 @@ public class ChannelManager {
 
         public int getNumberOfUsers() {
             return users.size();
+        }
+
+        /**
+         * Sends the new user all users in the channel
+         *
+         * @param newUser the user that just joined the channel
+         */
+        public void sendUsers(User newUser) {
+            for(User u : users) {
+                newUser.writeString("/server: connect " + u.getName());
+            }
         }
 
         public String getUserNames() {
