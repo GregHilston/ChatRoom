@@ -49,6 +49,14 @@ public class ClientApp {
         try {
             serverSocket = new Socket(hostName, portNumber);
 
+            if(!usingGui) {
+                Thread serverThread = new Thread(new HandleServerReply());
+                serverThread.start();
+
+                Thread clientThread = new Thread(new HandleClientInput());
+                clientThread.start();
+            }
+
             connected = true;
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);

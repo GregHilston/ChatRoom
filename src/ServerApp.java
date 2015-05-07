@@ -127,7 +127,7 @@ public class ServerApp {
                         if(fromClient.startsWith("/")) { // Server command
                             handleCommand(user, fromClient);
                         } else {
-                            user.getChannel().messageAllOtherUsers(new ChatMessage(user, fromClient));
+                            user.getChannel().messageAllUsers(new ChatMessage(user, fromClient));
                         }
                     }
                 }

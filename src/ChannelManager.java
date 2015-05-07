@@ -52,6 +52,19 @@ public class ChannelManager {
         }
 
         /**
+         * Messages every user
+         *
+         * @param message message being sent
+         */
+        public void messageAllUsers(ChatMessage message) {
+            Logger.logMessage(message);
+
+            for (User u : users) {
+                u.writeMessage(message);
+            }
+        }
+
+        /**
          * Messages every user besides the author
          *
          * @param message message being sent
