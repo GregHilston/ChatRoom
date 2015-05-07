@@ -34,7 +34,7 @@ public class ClientGui {
     }
 
     public void addUserToList(String userName) {
-        chatBoxUserListGui.setUserListTextArea(chatBoxUserListGui.getUserListTextArea().getText() + userName + "\n");
+        chatBoxUserListGui.getUserListTextArea().append(userName + "\n");
     }
 
     public void removeUserFromList(String userName) {
@@ -47,7 +47,7 @@ public class ClientGui {
      * @param fromServer string to append
      */
     public void updateChatBox(String fromServer) {
-        chatBoxUserListGui.getChatBoxTextArea().setText(chatBoxUserListGui.getChatBoxTextArea().getText() + "\n" + fromServer);
+        chatBoxUserListGui.getChatBoxTextArea().append("\n" + fromServer);
     }
 
     public void addComponentsToPane(Container pane) {

@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 
 /**
@@ -15,11 +16,14 @@ public class ChatBoxUserListGui extends JPanel {
         super();
         this.setLayout(new BorderLayout()); // TODO: Decide if this is better than new BoxLayout(this, BoxLayout.X_AXIS)
 
-        chatBoxTextArea = new JTextArea();
+        chatBoxTextArea = new JTextArea(9, 9);
         chatBoxTextArea.setEditable(false);
+        chatBoxTextArea.setLineWrap(true);
+        DefaultCaret caret = (DefaultCaret) chatBoxTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         chatBoxScrollPane = new JScrollPane(chatBoxTextArea);
 
-        userListTextArea = new JTextArea();
+        userListTextArea = new JTextArea(9, 9); // 9 rows, 9 columns holds the max 9 character username
         userListTextArea.setEditable(false);
         userListScrollPane = new JScrollPane(userListTextArea);
 
