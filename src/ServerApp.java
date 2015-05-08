@@ -172,7 +172,7 @@ public class ServerApp {
                 user = new User(proposedUserName, clientSocket, channelManager.getDefaultChannel());
                 users.add(user);
                 channelManager.addUser(user);
-                user.writeString("Welcome to \"" + user.getChannel().getName() + "\"");
+                user.writeString("Welcome to channel " + user.getChannel().getName() + " " + user.getName());
                 user.writeString(user.getChannel().getUserNames());
                 user.getChannel().messageAllOtherUsers(new ChatMessage(user, "has joined the channel"));
                 user.connectAlert();
@@ -200,17 +200,12 @@ public class ServerApp {
          * @param command command user entered. Starts with "/"
          */
         private void handleCommand(User user, String command) {
-            command = command.replace("/", ""); // Remove the /
-            String[] splited = new String[0];
-            String message = "";
+            command = command.substring(1); // Remove the "/"
+            String leftOver = ""; // Everything else besides the command. Individual commands will handle leftovers
 
             if(command.contains(" ")) {
-                splited = command.split(" ");
-                command = splited[0];
-
-                for(int i = 2; i < splited.length; i++) { // Rebuild the
-                    message += splited[i] + " ";
-                }
+                leftOver = command.substring(command.indexOf(" ") + 1);
+                command = command.substring(0, command.indexOf(" "));
             }
 
             switch (command) {
@@ -223,16 +218,15 @@ public class ServerApp {
                     break;
                 case "whisper":
                 case "message":
-                    String parameter0 = splited[1];
+                    String receivingUser = leftOver.substring(0, leftOver.indexOf(" "));
+                    String message = leftOver.substring(leftOver.indexOf(" "));
 
-                    if(splited.length >= 3) { // Checking for correct amount of space delimited input
-                        if(!privateMessage(user, parameter0, message)) { // Message wasn't sent, user (parameter 0) does not exist
-                            user.writeString("Error: User " + parameter0 + " does not exist in channel " + user.getChannel().getName());
-                        }
-                    } else {
-                        user.writeString("Incorrect usage of command: " + command);
-                        user.writeString("\t/whisper | /message [username] [message]\t privately messages the user");
+                    if(!privateMessage(user, receivingUser, message)) { // Message wasn't sent, receivingUser does not exist
+                        user.writeString("Error: User " + receivingUser + " does not exist in channel " + user.getChannel().getName());
                     }
+                    break;
+                case "join":
+
                     break;
                 default:
                     user.writeString("Unknown command: \"" + command + "\"");
