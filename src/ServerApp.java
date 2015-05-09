@@ -191,22 +191,20 @@ public class ServerApp {
             user.writeString("\t/list \t lists the users in your channel");
             user.writeString("\t/quit | /disconnect \t disconnect from the server");
             user.writeString("\t/whisper | /message [username] [message]\t privately messages the user");
+            user.writeString("\t/join [channel name]\t joins the channel. If is doesn't exist, creates it and joins.");
         }
 
         /**
          * Handles a command from the user
          *
          * @param user user who sent command
-         * @param command command user entered. Starts with "/"
+         * @param input input user entered. Starts with "/"
          */
-        private void handleCommand(User user, String command) {
-            command = command.substring(1); // Remove the "/"
-            String leftOver = ""; // Everything else besides the command. Individual commands will handle leftovers
+        private void handleCommand(User user, String input) {
+            input = input.substring(1); // Remove the "/"
+            String command = getNextSpaceDeliminatedParameter(input);
 
-            if(command.contains(" ")) {
-                leftOver = command.substring(command.indexOf(" ") + 1);
-                command = command.substring(0, command.indexOf(" "));
-            }
+            input = input.substring(input.indexOf(" ") + 1); // Update the input as we parsed the command
 
             switch (command) {
                 case "list":
@@ -218,15 +216,16 @@ public class ServerApp {
                     break;
                 case "whisper":
                 case "message":
-                    String receivingUser = leftOver.substring(0, leftOver.indexOf(" "));
-                    String message = leftOver.substring(leftOver.indexOf(" "));
+                    String receivingUser = getNextSpaceDeliminatedParameter(input);
+                    input = input.substring(input.indexOf(" ") + 1); // Update the input as we parsed the receivingUser
 
-                    if(!privateMessage(user, receivingUser, message)) { // Message wasn't sent, receivingUser does not exist
+                    if(!privateMessage(user, receivingUser, input)) { // input is leftover, which is our message
                         user.writeString("Error: User " + receivingUser + " does not exist in channel " + user.getChannel().getName());
                     }
                     break;
                 case "join":
-
+                    String channelName = getNextSpaceDeliminatedParameter(input);
+                    System.err.println("channelName: " + channelName);
                     break;
                 default:
                     user.writeString("Unknown command: \"" + command + "\"");
@@ -234,6 +233,15 @@ public class ServerApp {
                     printCommands();
                     break;
             }
+        }
+    }
+
+    String getNextSpaceDeliminatedParameter(String s) {
+        if(s.contains(" ")) {
+            return s.substring(0, s.indexOf(" "));
+        }
+        else {
+            return s; // Last part of the string, so there is no spaces in it
         }
     }
 
