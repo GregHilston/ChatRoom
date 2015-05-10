@@ -9,12 +9,15 @@ Java chat room, written to refamiliarize myself with basic thread operations and
 * Socket based server
 * Threaded
 * Event and chat logging
-
+* Private messages
+* Separate channels
+* Server commands
 
 ### To Do
 ========
 * Server GUI (Just for practice)
 * Client GUI
-* Private messages
-* Separate rooms/channels
-* Server commands
+    * Right clicking on user to
+        * ping
+        * send private message
+    *Export chat log for a client
