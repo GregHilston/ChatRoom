@@ -23,6 +23,15 @@ public class ClientGui {
      *
      * @param userList list of users
      */
+    public void setUserList(String userList) {
+        chatBoxUserListGui.setUserListTextArea(userList);
+    }
+
+    /**
+     * Updates the list of users
+     *
+     * @param userList list of users
+     */
     public void setUserList(ArrayList<User> userList) {
         String userlistText = "";
 
@@ -91,5 +100,9 @@ public class ClientGui {
         //Display the window.
         //frame.pack();
         frame.setVisible(true);
+    }
+
+    public void clearUserList() {
+        chatBoxUserListGui.getUserListTextArea().setText("");
     }
 }

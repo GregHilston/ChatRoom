@@ -98,23 +98,41 @@ public class ClientApp {
         }
     }
 
-    private void handleCommand(String fromServer) {
-        fromServer = fromServer.replace("/server: ", ""); // Remove the /server command
-        String[] splited = fromServer.split(" ");
-        String command = splited[0];
-        String parameter = splited[1];
+    private void handleCommand(String input) {
+        input = input.substring(9); // Remove the "/server: "
+        String command = getNextSpaceDeliminatedParameter(input);
+
+        input = input.substring(input.indexOf(" ") + 1); // Update the input as we parsed the command
 
         switch (command) {
+            case "updateUserlist":
+                if(usingGui) {
+                    clientGui.clearUserList();
+                    input = input.replace(" ", "\n"); // Can't send \n over the wire, so we send " " and replace them here
+                    clientGui.setUserList(input);
+                }
+                break;
+            case "join":
             case "connect":
                 if(usingGui) {
-                    clientGui.addUserToList(parameter);
+                    clientGui.addUserToList(input);
                 }
                 break;
+            case "left":
             case "disconnect":
                 if(usingGui) {
-                    clientGui.removeUserFromList(parameter);
+                    clientGui.removeUserFromList(input);
                 }
                 break;
+        }
+    }
+
+    String getNextSpaceDeliminatedParameter(String s) {
+        if(s.contains(" ")) {
+            return s.substring(0, s.indexOf(" "));
+        }
+        else {
+            return s; // Last part of the string, so there is no spaces in it
         }
     }
 

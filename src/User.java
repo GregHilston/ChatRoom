@@ -10,7 +10,7 @@ public class User {
     private String name;
     private Socket socket;
     private PrintWriter printWriter;
-    private ChannelManager.Channel channel; // The channel this user belongs to
+    private Channel channel; // The channel this user belongs to
     private State state = State.LOGIN;
 
     /**
@@ -20,7 +20,7 @@ public class User {
         LOGIN, CHATTING, LOGOUT
     }
 
-    public User(String name, Socket socket, ChannelManager.Channel channel) {
+    public User(String name, Socket socket, Channel channel) {
         this.name = name;
         this.socket = socket;
         this.channel = channel;
@@ -51,6 +51,13 @@ public class User {
     }
 
     /**
+     * The client userlist needs to be cleared and rebuilt
+     */
+    public void refreshUserList() {
+        writeString("/server: updateUserlist " + channel.getUserList());
+    }
+
+    /**
      * Alert all other users that this user connected
      */
     public void connectAlert() {
@@ -62,6 +69,20 @@ public class User {
      */
     public void disconnectAlert() {
         getChannel().stringToAllOtherUsers(this, "/server: disconnect " + getName());
+    }
+
+    /**
+     * Alert all other users that this user joined the channel
+     */
+    public void joinChannelAlert() {
+        getChannel().stringToAllOtherUsers(this, "/server: join " + getName());
+    }
+
+    /**
+     * Alert all other users that this user left the channel
+     */
+    public void leftChannelAlert() {
+        getChannel().stringToAllOtherUsers(this, "/server: left " + getName());
     }
 
     /**
@@ -94,8 +115,12 @@ public class User {
         return this.socket.getPort();
     }
 
-    public ChannelManager.Channel getChannel() {
+    public Channel getChannel() {
         return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public State getState() {

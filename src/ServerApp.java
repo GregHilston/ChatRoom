@@ -225,7 +225,7 @@ public class ServerApp {
                     break;
                 case "join":
                     String channelName = getNextSpaceDeliminatedParameter(input);
-                    System.err.println("channelName: " + channelName);
+                    joinChannel(user, channelName);
                     break;
                 default:
                     user.writeString("Unknown command: \"" + command + "\"");
@@ -243,6 +243,32 @@ public class ServerApp {
         else {
             return s; // Last part of the string, so there is no spaces in it
         }
+    }
+
+    /**
+     * If the channel exists, connect the user to the channel.
+     * If it doesn't, create the channel and connect the user
+     *
+     * @param user user who is moving channels
+     * @param channelName channel user wishes to join
+     */
+    private void joinChannel(User user, String channelName) {
+        Channel channel = channelManager.getChannel(channelName);
+
+        if(channel == null) { // Channel with the given name doesn't exist, create it
+            channel = new Channel(channelName);
+            channelManager.addChannel(channel);
+        }
+
+        user.getChannel().stringToAllOtherUsers(user, user.getName() + " has left the channel");
+        user.leftChannelAlert();
+        user.getChannel().removeUser(user);
+        user.setChannel(channel);
+        user.joinChannelAlert();
+        channel.addUser(user);
+        user.refreshUserList();
+        channel.stringToAllOtherUsers(user, user.getName() + " has joined the channel");
+        user.writeString("Welcome to channel " + channel.getName());
     }
 
     /**

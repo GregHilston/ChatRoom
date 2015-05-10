@@ -25,101 +25,19 @@ public class ChannelManager {
     }
 
     /**
-     * A chat Channel responsible for holding users
+     * Returns the Channel object with the given channelName
+     *
+     * @param channelName name of channel object desired
+     * @return channel if found, otherwise null
      */
-    public class Channel {
-        private String name;
-        private String description; // TODO: implement (print when user joins a channel)
-        private ArrayList<User> users = new ArrayList<>(); // Users currently in this channel
-
-        public Channel(String name) {
-            this.name = name;
-        }
-
-        /**
-         * Sends a string to  every user besides the author
-         * Generally used to send Server Messages to Clients
-         *      /server: connect [username]     user joined the channel
-         *      /server: disconnect [username]  user left the channel
-         * @param s String to be sent
-         */
-        public void stringToAllOtherUsers(User author, String s) {
-            for (User u : users) {
-                if (!u.getName().equalsIgnoreCase(author.getName())) { // Doesn't write the message to the author
-                    u.writeString(s);
-                }
+    public Channel getChannel(String channelName) {
+        for(Channel channel : channels) {
+            if(channel.getName().equalsIgnoreCase(channelName)) {
+                return channel;
             }
         }
 
-        /**
-         * Messages every user
-         *
-         * @param message message being sent
-         */
-        public void messageAllUsers(ChatMessage message) {
-            Logger.logMessage(message);
-
-            for (User u : users) {
-                u.writeMessage(message);
-            }
-        }
-
-        /**
-         * Messages every user besides the author
-         *
-         * @param message message being sent
-         */
-        public void messageAllOtherUsers(ChatMessage message) {
-            Logger.logMessage(message);
-
-            for (User u : users) {
-                if (!u.getName().equalsIgnoreCase(message.getUser().getName())) { // Doesn't write the message to the author
-                    u.writeMessage(message);
-                }
-            }
-        }
-
-        /**
-         * Add a user to this channel
-         *
-         * @param user the user to add to the channel
-         */
-        public void addUser(User user) {
-            users.add(user);
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getNumberOfUsers() {
-            return users.size();
-        }
-
-        /**
-         * Sends the new user all users in the channel
-         *
-         * @param newUser the user that just joined the channel
-         */
-        public void sendUsers(User newUser) {
-            for(User u : users) {
-                newUser.writeString("/server: connect " + u.getName());
-            }
-        }
-
-        public String getUserNames() {
-            String userList = "Users currently in channel:";
-
-            for(User u : users) {
-                userList += "\n\t" + u.getName() + "";
-            }
-
-            return userList;
-        }
-
-        public void removeUser(User u) {
-            users.remove(u);
-        }
+        return null;
     }
 
     /**
@@ -131,9 +49,7 @@ public class ChannelManager {
         Logger.logString(string);
 
         for (Channel c : channels) {
-            for (User user : c.users) {
-                user.writeString(string);
-            }
+            c.stringToAllUsers(string);
         }
     }
 
@@ -146,9 +62,11 @@ public class ChannelManager {
         Logger.logMessage(message);
 
         for (Channel c : channels) {
-            for (User user : c.users) {
-                user.writeMessage(message);
-            }
+            c.messageAllUsers(message);
         }
+    }
+
+    public void addChannel(Channel channel) {
+        channels.add(channel);
     }
 }
