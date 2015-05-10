@@ -41,7 +41,7 @@ public class ServerApp {
      * @param name name to check
      * @return if name contains only alphanumeric characters
      */
-    private static boolean alphaNumericOnly(String name) {
+    public static boolean alphaNumericOnly(String name) {
         return name.matches("^.*[^a-zA-Z0-9].*$"); // Regex
     }
 
