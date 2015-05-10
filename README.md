@@ -20,4 +20,4 @@ Java chat room, written to refamiliarize myself with basic thread operations and
     * Right clicking on user to
         * ping
         * send private message
-    *Export chat log for a client
+    * Export chat log for a client
