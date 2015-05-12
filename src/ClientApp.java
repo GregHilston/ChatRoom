@@ -127,7 +127,7 @@ public class ClientApp {
         }
     }
 
-    String getNextSpaceDeliminatedParameter(String s) {
+    private String getNextSpaceDeliminatedParameter(String s) {
         if(s.contains(" ")) {
             return s.substring(0, s.indexOf(" "));
         }

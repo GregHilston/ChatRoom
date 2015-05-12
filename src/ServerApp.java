@@ -10,7 +10,7 @@ import java.util.HashSet;
  * The Chat server that users join channels to speak to one another
  */
 public class ServerApp {
-    private static HashSet<User> users = new HashSet<>(); // Users currently on the server
+    private HashSet<User> users = new HashSet<>(); // Users currently on the server
     private ServerSocket serverSocket;
     private int portNumber;
     private ChannelManager channelManager = new ChannelManager("#lobby");
@@ -25,7 +25,7 @@ public class ServerApp {
      * @param name name to check
      * @return if unique username
      */
-    private static boolean uniqueUsername(String name) {
+    private boolean uniqueUsername(String name) {
         for (User u : users) {
             if (u.getName().toLowerCase().equals(name.toLowerCase())) {
                 return false;
@@ -39,10 +39,10 @@ public class ServerApp {
      * Checks if an entered username is composed of only alphanumeric characters
      *
      * @param name name to check
-     * @return if name contains only alphanumeric characters
+     * @return if name contains only alphanumeric characters only
      */
     public static boolean alphaNumericOnly(String name) {
-        return name.matches("^.*[^a-zA-Z0-9].*$"); // Regex
+        return !name.matches("^.*[^a-zA-Z0-9].*$"); // Regex
     }
 
     /**
@@ -159,7 +159,7 @@ public class ServerApp {
          * @return whether the proposed username was accepted
          */
         private Boolean login(String proposedUserName) {
-            if (alphaNumericOnly(proposedUserName)) {
+            if (!alphaNumericOnly(proposedUserName)) {
                 serverOut.println("That username contains illegal non-alphanumeric character(s), please try another username.");
                 return false;
             } else if (!uniqueUsername(proposedUserName)) {
@@ -236,7 +236,7 @@ public class ServerApp {
         }
     }
 
-    String getNextSpaceDeliminatedParameter(String s) {
+    private String getNextSpaceDeliminatedParameter(String s) {
         if(s.contains(" ")) {
             return s.substring(0, s.indexOf(" "));
         }
